@@ -26,6 +26,12 @@ export default function CreateClientPage() {
                 </div>
 
                 <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Adres URL strony (opcjonalnie)</label>
+                    <input name="websiteUrl" type="url" className="w-full px-4 py-2 border rounded-lg" placeholder="https://www.example.com" />
+                    <p className="text-xs text-gray-500 mt-1">Po kliknięciu w logo, użytkownik zostanie przekierowany na tę stronę</p>
+                </div>
+
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Logo</label>
                     <ImageUploader value={logoUrl} onUpload={setLogoUrl} />
                     <input type="hidden" name="logoUrl" value={logoUrl} />

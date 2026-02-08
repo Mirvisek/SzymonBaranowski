@@ -118,11 +118,12 @@ model SiteSetting {
 }
 
 model TrustedClient {
-  id        String   @id @default(uuid())
-  name      String
-  logoUrl   String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  name       String
+  logoUrl    String
+  websiteUrl String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
 }
 
 model ContactMessage {

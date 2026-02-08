@@ -265,6 +265,7 @@ export async function deleteOffer(id: string) {
 export async function createTrustedClient(prevState: any, formData: FormData) {
     const name = formData.get('name') as string;
     const logoUrl = formData.get('logoUrl') as string;
+    const websiteUrl = formData.get('websiteUrl') as string;
 
     if (!name || !logoUrl) {
         return { message: 'Missing required fields' };
@@ -275,6 +276,7 @@ export async function createTrustedClient(prevState: any, formData: FormData) {
             data: {
                 name,
                 logoUrl,
+                websiteUrl: websiteUrl || null,
             },
         });
     } catch (error) {

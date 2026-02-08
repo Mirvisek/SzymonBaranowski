@@ -56,11 +56,26 @@ export default function AboutClient({ content, imageUrl, clients }: { content: s
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
                         {clients.map((client) => (
                             <div key={client.id} className="w-full h-32 flex items-center justify-center p-4 bg-white hover:shadow-lg rounded-xl transition-all duration-300 group">
-                                <img
-                                    src={client.logoUrl}
-                                    alt={client.name}
-                                    className="max-h-full max-w-full object-contain filter group-hover:brightness-110"
-                                />
+                                {client.websiteUrl ? (
+                                    <a
+                                        href={client.websiteUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="max-h-full max-w-full flex items-center justify-center"
+                                    >
+                                        <img
+                                            src={client.logoUrl}
+                                            alt={client.name}
+                                            className="max-h-full max-w-full object-contain filter group-hover:brightness-110 transition-all"
+                                        />
+                                    </a>
+                                ) : (
+                                    <img
+                                        src={client.logoUrl}
+                                        alt={client.name}
+                                        className="max-h-full max-w-full object-contain filter group-hover:brightness-110"
+                                    />
+                                )}
                             </div>
                         ))}
                     </div>
