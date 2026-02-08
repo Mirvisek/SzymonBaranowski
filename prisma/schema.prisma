@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  name     String?
+}
+
+model PortfolioCategory {
+  id        String          @id @default(uuid())
+  name      String
+  slug      String          @unique
+  imageUrl  String?         // Okładka kategorii
+  order     Int             @default(0)
+  items     PortfolioItem[]
+  createdAt DateTime        @default(now())
+}
+
+model PortfolioItem {
+  id          String            @id @default(uuid())
+  title       String?
+  imageUrl    String
+  description String?
+  orientation String            @default("horizontal") // "horizontal" or "vertical"
+  order       Int               @default(0)
+  categoryId  String
+  category    PortfolioCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  author    String
+  content   String
+  role      String?
+  createdAt DateTime @default(now())
+}
+
+model OfferServices {
+  id          String @id @default(uuid())
+  category    String // 'fotografia', 'grafika', 'marketing'
+  title       String
+  description String
+  price       String
+  features    String // JSON string or comma separated
+  duration    String?
+  imageUrl    String?
+  questions   String? // JSON string (array of strings)
+  reservations Reservation[]
+}
+
+model DiscountCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  type      String   // 'percent' or 'amount'
+  value     Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Reservation {
+  id             String        @id @default(uuid())
+  offerId        String
+  offer          OfferServices @relation(fields: [offerId], references: [id])
+  date           DateTime
+  clientName     String
+  clientEmail    String
+  clientPhone    String
+  status         String        @default("pending") // pending, confirmed, cancelled
+  answers        String?       // JSON string of Q&A
+  discountCodeId String?
+  totalPrice     String?
+  createdAt      DateTime      @default(now())
+}
+
+model HeroSlide {
+  id          String   @id @default(uuid())
+  title       String
+  subtitle    String?
+  imageUrl    String
+  buttonText  String?
+  buttonLink  String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model SiteSetting {
+  key         String   @id @unique
+  value       String   // Text content, JSON, or simple values
+  type        String   // 'text', 'rich-text', 'image', 'link'
+  label       String?  // User friendly label for admin
+  group       String   // 'contact', 'social', 'about', 'home'
+}
+
+model TrustedClient {
+  id        String   @id @default(uuid())
+  name      String
+  logoUrl   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model FAQItem {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}

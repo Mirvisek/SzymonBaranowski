@@ -1,0 +1,10 @@
+# robots.txt for Szymon Baranowski Portfolio
+User-agent: *
+Allow: /
+
+# Disallow admin panel
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://szymonbaranowski.pl/sitemap.xml
