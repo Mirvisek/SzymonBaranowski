@@ -139,3 +139,49 @@ export async function sendStatusUpdateEmail(data: {
         return { success: false, error };
     }
 }
+
+export async function sendAdminPasswordChangedEmail(to: string, newPassword?: string) {
+    const passwordSection = newPassword ? `
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #eee;">
+            <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Nowe hasło:</p>
+            <p style="margin: 5px 0 0; color: #333; font-size: 24px; font-weight: bold; font-family: monospace;">${newPassword}</p>
+        </div>
+    ` : '';
+
+    const mailOptions = {
+        from: `"Szymon Baranowski System" <${process.env.EMAIL_FROM}>`,
+        to: to,
+        subject: 'Ważne: Zmiana hasła do panelu administratora',
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+                <h2 style="color: #333;">Zmiana hasła zakończona sukcesem</h2>
+                <p>Cześć,</p>
+                <p>Informujemy, że hasło do Twojego konta administratora w serwisie <strong>szymonbaranowski.pl</strong> zostało pomyślnie zmienione.</p>
+                
+                ${passwordSection}
+
+                <div style="background-color: #f0fdf4; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid #16a34a;">
+                    <p style="margin: 0; color: #166534;"><strong>Twoje konto jest bezpieczne.</strong></p>
+                    <p style="margin: 5px 0 0; font-size: 14px; color: #166534;">Jeśli to nie Ty dokonałeś tej zmiany, skontaktuj się natychmiast z administratorem technicznym.</p>
+                </div>
+
+                <p style="margin-top: 30px;">Możesz teraz zalogować się używając nowego hasła.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${process.env.NEXTAUTH_URL}/admin/login" style="background-color: #333; color: #fff; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;">Zaloguj się</a>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+                <p style="font-size: 12px; color: #999; text-align: center;">Wiadomość wygenerowana automatycznie.</p>
+            </div>
+        `,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        return { success: true };
+    } catch (error) {
+        console.error('Password change email failed:', error);
+        return { success: false, error };
+    }
+}
