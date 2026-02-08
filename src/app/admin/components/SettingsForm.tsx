@@ -173,6 +173,34 @@ export default function SettingsForm({ settings, currentUserEmail }: { settings:
                                         </div>
                                     </div>
 
+                                    {/* Navbar Settings */}
+                                    <div className="p-6 bg-gray-50 rounded-xl border border-gray-100">
+                                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                            </svg>
+                                            Nawigacja (Logo i Nazwa)
+                                        </h3>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <InputGroup
+                                                label="Nazwa marki w navbar"
+                                                name="navbar_brand_name"
+                                                defaultValue={settings.navbar_brand_name || 'Szymon'}
+                                            />
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">Logo w navbar (opcjonalnie)</label>
+                                                <input
+                                                    type="text"
+                                                    name="navbar_logo_url"
+                                                    defaultValue={settings.navbar_logo_url || ''}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                                    placeholder="URL logo (np. /logo.png)"
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">Jeśli podasz URL, logo zastąpi tekst. Rekomendowany rozmiar: 150x40px</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div className="p-5 bg-primary/5 rounded-xl border border-primary/10">
                                         <h3 className="font-bold text-primary mb-4 text-sm uppercase tracking-wide">STRONA GŁÓWNA</h3>
                                         <div className="space-y-4">
