@@ -17,6 +17,7 @@ export default function SettingsForm({ settings, currentUserEmail }: { settings:
     const [aboutImage, setAboutImage] = useState(settings.about_image || '');
     const [privacyContent, setPrivacyContent] = useState(settings.policy_privacy_content || '');
     const [cookiesContent, setCookiesContent] = useState(settings.policy_cookies_content || '');
+    const [navbarLogoUrl, setNavbarLogoUrl] = useState(settings.navbar_logo_url || '');
 
     const InputGroup = ({ label, name, defaultValue, type = "text", rows }: { label: string, name: string, defaultValue?: string, type?: string, rows?: number }) => (
         <div className="mb-4">
@@ -189,14 +190,12 @@ export default function SettingsForm({ settings, currentUserEmail }: { settings:
                                             />
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-2">Logo w navbar (opcjonalnie)</label>
-                                                <input
-                                                    type="text"
-                                                    name="navbar_logo_url"
-                                                    defaultValue={settings.navbar_logo_url || ''}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                                    placeholder="URL logo (np. /logo.png)"
+                                                <ImageUploader
+                                                    value={navbarLogoUrl}
+                                                    onUpload={setNavbarLogoUrl}
                                                 />
-                                                <p className="text-xs text-gray-500 mt-1">Jeśli podasz URL, logo zastąpi tekst. Rekomendowany rozmiar: 150x40px</p>
+                                                <input type="hidden" name="navbar_logo_url" value={navbarLogoUrl} />
+                                                <p className="text-xs text-gray-500 mt-1">Jeśli przesłesz logo, zastąpi ono tekst w nawigacji. Rekomendowany rozmiar: 200x50px (proporcje 4:1)</p>
                                             </div>
                                         </div>
                                     </div>
