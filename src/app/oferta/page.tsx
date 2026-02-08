@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import OfferList from '@/components/OfferList';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import FAQList from '@/components/FAQList';
+import ScrollReveal from '@/components/ScrollReveal';
 import { getOffers, getFAQs, getSettings } from '@/app/lib/data';
 import { Metadata } from 'next';
 
@@ -37,12 +38,18 @@ export default async function Oferta() {
             </div>
 
             <div className="pt-8 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl md:text-5xl font-bold text-center text-primary mb-16">Oferta</h1>
+                <ScrollReveal>
+                    <h1 className="text-4xl md:text-5xl font-bold text-center text-primary mb-16">Oferta</h1>
+                </ScrollReveal>
 
-                <OfferList offers={groupedOffers} />
+                <ScrollReveal delay={0.4}>
+                    <OfferList offers={groupedOffers} />
+                </ScrollReveal>
             </div>
 
-            <FAQList items={faqs} />
+            <ScrollReveal direction="up">
+                <FAQList items={faqs} />
+            </ScrollReveal>
 
             <Footer />
         </main>

@@ -17,7 +17,29 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
     title: settings.site_title || 'Szymon - Fotografia, Grafika, Marketing',
-    description: settings.site_description || 'Profesjonalne usługi: Fotografia, Grafika, Marketing.',
+    keywords: 'Szymon Baranowski, Tarnów, Fotografia Tarnów, Grafik Tarnów, Marketing Tarnów, profesjonalne sesje zdjęciowe, fotografia biznesowa, fotografia produktowa, fotografia wizerunkowa, sesje lifestyle, projektowanie graficzne, identyfikacja wizualna, branding, projektowanie logo, grafika do social media, marketing internetowy, strategia marki, social media marketing, copywriting, kampanie reklamowe',
+    openGraph: {
+      title: settings.site_title || 'Szymon - Fotografia, Grafika, Marketing',
+      description: settings.site_description || 'Profesjonalne usługi: Fotografia, Grafika, Marketing.',
+      url: 'https://szymonbaranowski.pl',
+      siteName: 'Szymon Baranowski Portfolio',
+      images: [
+        {
+          url: '/og-image.jpg', // Pamiętaj o dodaniu tego pliku do folderu public!
+          width: 1200,
+          height: 630,
+          alt: 'Szymon Baranowski Portfolio',
+        },
+      ],
+      locale: 'pl_PL',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: settings.site_title || 'Szymon - Fotografia, Grafika, Marketing',
+      description: settings.site_description || 'Profesjonalne usługi: Fotografia, Grafika, Marketing.',
+      images: ['/og-image.jpg'],
+    },
     manifest: '/manifest.json',
     appleWebApp: {
       capable: true,
