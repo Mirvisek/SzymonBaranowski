@@ -5,14 +5,18 @@ require('dotenv').config();
 const prisma = new PrismaClient();
 
 async function main() {
-    const email = 'admin@admin.com';
-    const password = 'admin'; // Change this heavily in prod!
+    const email = process.argv[2] || 'admin@admin.com';
+    const password = process.argv[3] || 'admin123'; // Default reset password
+
+    console.log(`Resetting password for user: ${email} to: ${password}`);
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.upsert({
         where: { email },
-        update: {},
+        update: {
+            password: hashedPassword,
+        },
         create: {
             email,
             password: hashedPassword,
@@ -20,7 +24,7 @@ async function main() {
         },
     });
 
-    console.log({ user });
+    console.log('Password reset successful for:', user.email);
 }
 
 main()
