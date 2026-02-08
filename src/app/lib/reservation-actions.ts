@@ -2,7 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
-import { sendReservationEmail, sendStatusUpdateEmail } from './email';
+import { sendReservationEmail, sendStatusUpdateEmail, sendChatMessageEmail } from './email';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
@@ -197,20 +197,18 @@ export async function sendReservationMessage(reservationId: string, sender: 'cli
         try {
             const isToAdmin = sender === 'client';
             const recipientEmail = isToAdmin
-                ? (process.env.ADMIN_EMAIL || process.env.EMAIL_FROM)
+                ? (process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || '')
                 : message.reservation.clientEmail;
 
-            const subject = isToAdmin
-                ? `Nowa wiadomość od klienta: ${message.reservation.clientName}`
-                : `Nowa wiadomość od Szymon Baranowski - Rezerwacja ${message.reservation.code}`;
-
-            const link = `${process.env.NEXTAUTH_URL}/rezerwacja/${message.reservation.code}`;
-            const adminLink = `${process.env.NEXTAUTH_URL}/admin/reservations/${message.reservation.id}`;
-
-            // We should use a helper for this later, but for now simple nodemailer
-            // Since this is a server action, we can import things
+            await sendChatMessageEmail({
+                to: recipientEmail,
+                clientName: message.reservation.clientName,
+                messageContent: content,
+                reservationCode: message.reservation.code || '',
+                isToAdmin
+            });
         } catch (e) {
-            console.error('Message notification failed');
+            console.error('Message notification failed:', e);
         }
 
         revalidatePath(`/rezerwacja/${message.reservation.code}`);
