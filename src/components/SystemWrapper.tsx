@@ -16,10 +16,16 @@ export default function SystemWrapper({
 }) {
     const pathname = usePathname();
     const isMaintenance = settings.maintenance_mode === 'true';
-    // Allow access to login page and API routes even in maintenance mode
-    const isAllowedPath = pathname.startsWith('/admin') || pathname.startsWith('/api') || pathname === '/login';
 
-    if (isMaintenance && !isAdmin && !isAllowedPath) {
+    // Allow access to admin panel and API routes even in maintenance mode
+    const isAdminPath = pathname?.startsWith('/admin');
+    const isApiPath = pathname?.startsWith('/api');
+
+    // Show maintenance page only if:
+    // - maintenance mode is enabled
+    // - user is NOT an admin
+    // - current path is NOT admin or API
+    if (isMaintenance && !isAdmin && !isAdminPath && !isApiPath) {
         return <MaintenancePage />;
     }
 
