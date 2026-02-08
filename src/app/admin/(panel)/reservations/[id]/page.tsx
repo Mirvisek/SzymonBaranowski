@@ -22,7 +22,7 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                 }
             }
         }
-    });
+    }) as any;
 
     if (!res) {
         notFound();
