@@ -57,8 +57,8 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                 </div>
 
                 {/* Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3">
-                    {/* Sidebar - natural height */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 items-stretch min-h-[450px]">
+                    {/* Sidebar - natural height determines grid height */}
                     <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/50 flex flex-col gap-8">
                         <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Informacje</h3>
@@ -90,7 +90,7 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                             </div>
                         </div>
 
-                        <div className="mt-auto">
+                        <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Konfiguracja</h3>
                             <div className="p-4 bg-white rounded-2xl border border-gray-200">
                                 <p className="text-xs text-gray-400 mb-1">Cena końcowa</p>
@@ -99,16 +99,13 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                         </div>
                     </div>
 
-                    {/* Chat Section - fixed height container inside grid */}
-                    <div className="lg:col-span-2 flex flex-col h-[700px] lg:h-auto border-l border-gray-100 bg-white relative">
+                    {/* Chat Section - height matches sidebar */}
+                    <div className="lg:col-span-2 flex flex-col border-gray-100 bg-white relative">
                         <div className="p-4 md:p-6 border-b border-gray-100 flex items-center gap-3 shrink-0">
                             <MessageSquare className="text-primary" size={20} />
                             <h2 className="text-lg md:text-xl font-bold text-dark">Wiadomości z klientem</h2>
                         </div>
-                        {/* We set a min-height for chat to ensure it looks good even if sidebar is short, 
-                            but allow grid to stretch it if sidebar is long. 
-                            However, internal chat needs to be confined to scroll. */}
-                        <div className="flex-1 min-h-[600px] overflow-hidden relative">
+                        <div className="flex-1 overflow-hidden relative min-h-[400px] lg:min-h-0">
                             <div className="absolute inset-0">
                                 <ReservationChat
                                     reservationId={res.id}
