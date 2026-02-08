@@ -307,26 +307,32 @@ export async function createHeroSlide(prevState: any, formData: FormData) {
     const buttonText = formData.get('buttonText') as string;
     const buttonLink = formData.get('buttonLink') as string;
 
+    console.log('Creating hero slide:', { title, subtitle, imageUrl, buttonText, buttonLink });
+
     if (!title || !imageUrl) {
-        return { message: 'Missing required fields' };
+        console.error('Missing required fields');
+        return { message: 'Brak wymaganych pól (tytuł i zdjęcie)' };
     }
 
     try {
-        await prisma.heroSlide.create({
+        const slide = await prisma.heroSlide.create({
             data: {
                 title,
-                subtitle,
+                subtitle: subtitle || null,
                 imageUrl,
-                buttonText,
-                buttonLink,
+                buttonText: buttonText || null,
+                buttonLink: buttonLink || null,
                 order: 0,
             },
         });
+        console.log('Hero slide created successfully:', slide.id);
     } catch (error) {
-        return { message: 'Database Error: Failed to Create Slide.' };
+        console.error('Database Error creating hero slide:', error);
+        return { message: 'Błąd bazy danych: Nie udało się utworzyć slajdu.' };
     }
 
     revalidatePath('/');
+    revalidatePath('/admin/hero');
     redirect('/admin/hero');
 }
 
