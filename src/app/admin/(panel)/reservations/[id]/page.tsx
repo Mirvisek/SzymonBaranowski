@@ -29,16 +29,16 @@ export default async function AdminReservationDetailPage({ params }: { params: P
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-100px)] max-w-7xl mx-auto px-4 pt-4 pb-2">
+        <div className="max-w-7xl mx-auto px-4 pt-4 pb-12">
             <div className="shrink-0 mb-4">
                 <Link href="/admin/reservations" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary transition-colors font-medium">
                     <ChevronLeft size={20} /> Powrót do listy
                 </Link>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col flex-1 min-h-0">
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 {/* Header */}
-                <div className="p-6 md:p-8 border-b border-gray-100 flex flex-wrap justify-between items-center gap-4 shrink-0 bg-white z-10">
+                <div className="p-6 md:p-8 border-b border-gray-100 flex flex-wrap justify-between items-center gap-4 bg-white z-10">
                     <div>
                         <div className="flex items-center gap-3 mb-1">
                             <span className="text-sm font-mono text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">#{res.code}</span>
@@ -57,9 +57,9 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                 </div>
 
                 {/* Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 flex-1 min-h-0 overflow-hidden">
-                    {/* Sidebar - scrollable */}
-                    <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/50 space-y-8 overflow-y-auto custom-scrollbar">
+                <div className="grid grid-cols-1 lg:grid-cols-3">
+                    {/* Sidebar - natural height */}
+                    <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/50 space-y-8">
                         <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Informacje</h3>
                             <div className="space-y-4">
@@ -99,13 +99,16 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                         </div>
                     </div>
 
-                    {/* Chat Section - takes remaining height */}
-                    <div className="lg:col-span-2 flex flex-col h-full bg-white relative">
+                    {/* Chat Section - fixed height container inside grid */}
+                    <div className="lg:col-span-2 flex flex-col h-[700px] lg:h-auto border-l border-gray-100 bg-white relative">
                         <div className="p-4 md:p-6 border-b border-gray-100 flex items-center gap-3 shrink-0">
                             <MessageSquare className="text-primary" size={20} />
                             <h2 className="text-lg md:text-xl font-bold text-dark">Wiadomości z klientem</h2>
                         </div>
-                        <div className="flex-1 min-h-0 overflow-hidden relative">
+                        {/* We set a min-height for chat to ensure it looks good even if sidebar is short, 
+                            but allow grid to stretch it if sidebar is long. 
+                            However, internal chat needs to be confined to scroll. */}
+                        <div className="flex-1 min-h-[600px] overflow-hidden relative">
                             <div className="absolute inset-0">
                                 <ReservationChat
                                     reservationId={res.id}

@@ -29,7 +29,7 @@ export default function ReservationChat({
     const [messages, setMessages] = useState<Message[]>(Array.isArray(initialMessages) ? initialMessages : []);
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
     // Function to fetch latest messages
@@ -74,7 +74,10 @@ export default function ReservationChat({
     }, [fetchMessages]);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (messagesContainerRef.current) {
+            const { scrollHeight, clientHeight } = messagesContainerRef.current;
+            messagesContainerRef.current.scrollTop = scrollHeight - clientHeight;
+        }
     };
 
     useEffect(() => {
@@ -115,7 +118,10 @@ export default function ReservationChat({
     return (
         <div className="flex flex-col h-full bg-white">
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div
+                ref={messagesContainerRef}
+                className="flex-1 overflow-y-auto p-6 space-y-6"
+            >
                 {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-12">
                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 text-gray-300">
@@ -152,8 +158,6 @@ export default function ReservationChat({
                         );
                     })
                 )}
-
-                <div ref={messagesEndRef} />
             </div>
 
             {/* Input Area */}
