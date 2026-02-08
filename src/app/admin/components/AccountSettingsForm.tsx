@@ -1,11 +1,21 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { updateAdminAccount } from '@/app/lib/account-actions';
 import { Save, User, Lock, Mail } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 export default function AccountSettingsForm({ currentUserEmail }: { currentUserEmail: string }) {
     const [state, formAction] = useActionState(updateAdminAccount, null);
+
+    useEffect(() => {
+        if (state?.success) {
+            const timer = setTimeout(() => {
+                signOut({ callbackUrl: '/admin/login' });
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [state?.success]);
 
     return (
         <form action={formAction} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 animate-fade-in min-h-[500px]">
