@@ -78,8 +78,8 @@ export async function submitReservation(data: {
                 date: format(data.date, 'd MMMM yyyy, HH:mm', { locale: pl }),
                 offerTitle: offer?.title || 'Usługa',
                 totalPrice: data.finalPrice || '0 PLN',
-                reservationCode: reservation.code,
-                password: reservation.password
+                reservationCode: reservation.code || '',
+                password: reservation.password || ''
             });
         } catch (emailError) {
             console.error('Email notification failed:', emailError);
