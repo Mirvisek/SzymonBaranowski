@@ -1,7 +1,10 @@
 import prisma from '@/lib/prisma';
 import { TrendingUp, Users, Image, MessageSquare, Calendar, Eye } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AnalyticsPage() {
+    // ... rest of the code
     // Fetch statistics
     const [
         portfolioCount,
@@ -76,8 +79,8 @@ export default async function AnalyticsPage() {
                                 <div key={reservation.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                                     <Calendar className="text-primary flex-shrink-0 mt-0.5" size={18} />
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm text-gray-900 truncate">{reservation.clientName}</p>
-                                        <p className="text-xs text-gray-500">{reservation.offer.title}</p>
+                                        <p className="font-medium text-sm text-gray-900 truncate">{reservation.clientName || 'Klient'}</p>
+                                        <p className="text-xs text-gray-500">{reservation.offer?.title || 'Nieznana oferta'}</p>
                                         <p className="text-xs text-gray-400 mt-1">
                                             {new Date(reservation.createdAt).toLocaleDateString('pl-PL')}
                                         </p>
@@ -99,8 +102,8 @@ export default async function AnalyticsPage() {
                                 <div key={message.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                                     <MessageSquare className="text-primary flex-shrink-0 mt-0.5" size={18} />
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm text-gray-900 truncate">{message.name}</p>
-                                        <p className="text-xs text-gray-500 line-clamp-2">{message.message}</p>
+                                        <p className="font-medium text-sm text-gray-900 truncate">{message.name || 'Nadawca'}</p>
+                                        <p className="text-xs text-gray-500 line-clamp-2">{message.message || 'Brak treści'}</p>
                                         <p className="text-xs text-gray-400 mt-1">
                                             {new Date(message.createdAt).toLocaleDateString('pl-PL')}
                                         </p>
