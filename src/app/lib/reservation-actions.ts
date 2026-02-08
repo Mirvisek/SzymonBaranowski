@@ -2,7 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
-import { sendReservationEmail, sendStatusUpdateEmail, sendChatMessageEmail } from './email';
+import { sendReservationEmail, sendStatusUpdateEmail } from './email';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
@@ -146,7 +146,21 @@ export async function updateReservationDetails(id: string, data: {
             data: {
                 ...data,
             },
+            include: {
+                offer: true
+            }
         });
+
+        // Jeśli zmieniła się data, wyślij powiadomienie
+        if (data.date) {
+            await sendStatusUpdateEmail({
+                to: updated.clientEmail,
+                clientName: updated.clientName,
+                date: format(new Date(updated.date), 'dd MMMM yyyy, HH:mm', { locale: pl }),
+                offerTitle: updated.offer.title,
+                status: 'date_change' // Specjalny status dla zmiany daty
+            });
+        }
 
         revalidatePath('/admin/reservations');
         revalidatePath(`/admin/reservations/${id}`);
@@ -185,47 +199,12 @@ export async function sendReservationMessage(reservationId: string, sender: 'cli
                 content
             },
             include: {
-                reservation: {
-                    include: {
-                        offer: true
-                    }
-                }
+                reservation: true
             }
         });
 
-        // Send email notification about new message
-        try {
-            const isToAdmin = sender === 'client';
-            const recipientEmail = isToAdmin
-                ? (process.env.ADMIN_EMAIL || process.env.EMAIL_FROM || '')
-                : message.reservation.clientEmail;
-
-            await sendChatMessageEmail({
-                to: recipientEmail,
-                clientName: message.reservation.clientName,
-                messageContent: content,
-                reservationCode: message.reservation.code || '',
-                isToAdmin
-            });
-        } catch (e) {
-            console.error('Message notification failed:', e);
-        }
-
         revalidatePath(`/rezerwacja/${message.reservation.code}`);
         revalidatePath(`/admin/reservations`);
-        return { success: true };
-    } catch (error) {
-        return { success: false };
-    }
-}
-
-export async function updateTypingStatus(reservationId: string, role: 'admin' | 'client') {
-    try {
-        const field = role === 'admin' ? 'lastAdminTypingAt' : 'lastClientTypingAt';
-        await prisma.reservation.update({
-            where: { id: reservationId },
-            data: { [field]: new Date() }
-        });
         return { success: true };
     } catch (error) {
         return { success: false };

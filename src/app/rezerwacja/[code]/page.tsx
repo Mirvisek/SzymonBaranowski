@@ -134,8 +134,6 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                                     reservationId={reservation.id}
                                     initialMessages={reservation.messages}
                                     role="client"
-                                    lastAdminTypingAt={reservation.lastAdminTypingAt}
-                                    lastClientTypingAt={reservation.lastClientTypingAt}
                                 />
                             </div>
                         </div>

@@ -95,6 +95,10 @@ export async function sendStatusUpdateEmail(data: {
         statusText = 'ANULOWANA';
         statusColor = '#EF4444'; // Red
         extraMessage = 'Z przykrością informujemy, że Twoja rezerwacja została anulowana. Jeśli masz pytania, skontaktuj się z nami.';
+    } else if (status === 'date_change') {
+        statusText = 'ZMIANA TERMINU';
+        statusColor = '#3B82F6'; // Blue
+        extraMessage = `Twój termin sesji został zaktualizowany. Nowy termin to: <strong>${date}</strong>.`;
     } else {
         statusText = 'ZMIENIONA';
         statusColor = '#F59E0B'; // Amber
@@ -112,7 +116,7 @@ export async function sendStatusUpdateEmail(data: {
                 <p>Informujemy, że status Twojej rezerwacji na usługę <strong>${offerTitle}</strong> (termin: ${date}) został zmieniony na:</p>
                 
                 <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid ${statusColor};">
-                    <p style="margin: 0; font-size: 18px; font-bold: bold; color: ${statusColor};"><strong>STATUS: ${statusText}</strong></p>
+                    <p style="margin: 0; font-size: 18px; font-weight: bold; color: ${statusColor};"><strong>STATUS: ${statusText}</strong></p>
                 </div>
 
                 <p>${extraMessage}</p>
@@ -132,54 +136,6 @@ export async function sendStatusUpdateEmail(data: {
         return { success: true };
     } catch (error) {
         console.error('Status email sending failed:', error);
-        return { success: false, error };
-    }
-}
-
-export async function sendChatMessageEmail(data: {
-    to: string;
-    clientName: string;
-    messageContent: string;
-    reservationCode: string;
-    isToAdmin: boolean;
-}) {
-    const { to, clientName, messageContent, reservationCode, isToAdmin } = data;
-    const link = isToAdmin
-        ? `${process.env.NEXTAUTH_URL}/admin/reservations`
-        : `${process.env.NEXTAUTH_URL}/rezerwacja/${reservationCode}`;
-
-    const mailOptions = {
-        from: `"Szymon Baranowski" <${process.env.EMAIL_FROM}>`,
-        to: to,
-        subject: isToAdmin
-            ? `Nowa wiadomość od klienta: ${clientName}`
-            : `Nowa wiadomość od: Szymon Baranowski`,
-        html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-                <h2 style="color: #333;">Nowa wiadomość w czacie</h2>
-                <p>Cześć <strong>${isToAdmin ? 'Szymon' : clientName}</strong>,</p>
-                <p>Otrzymałeś nową wiadomość dotyczącą rezerwacji <strong>#${reservationCode}</strong>:</p>
-                
-                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid #333; font-style: italic;">
-                    "${messageContent}"
-                </div>
-
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${link}" style="background-color: #333; color: #fff; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;">Odpowiedz w czacie</a>
-                </div>
-
-                <p style="font-size: 12px; color: #999; text-align: center; margin-top: 30px;">
-                    Ta wiadomość została wysłana automatycznie przez system rezerwacji szymonbaranowski.pl
-                </p>
-            </div>
-        `,
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        return { success: true };
-    } catch (error) {
-        console.error('Chat email sending failed:', error);
         return { success: false, error };
     }
 }
