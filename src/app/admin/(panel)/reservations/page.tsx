@@ -1,9 +1,9 @@
-
 import prisma from '@/lib/prisma';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
-import { Calendar, Mail, Phone, Clock, Trash2, CheckCircle, XCircle, AlertCircle, MessageSquare } from 'lucide-react';
-import { deleteReservation, updateReservationStatus } from '@/app/lib/reservation-actions';
+import { Calendar, Mail, Phone, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare } from 'lucide-react';
+import { updateReservationStatus } from '@/app/lib/reservation-actions';
+import DeleteReservationButton from '@/app/admin/components/DeleteReservationButton';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -58,8 +58,27 @@ export default async function ReservationsPage() {
             ) : (
                 <div className="grid grid-cols-1 gap-6">
                     {reservations.map((res: any, index) => {
-                        const answers = res.answers ? JSON.parse(res.answers) : {};
+                        // Safe parsing of answers
+                        let answers = {};
+                        try {
+                            if (res.answers) {
+                                if (typeof res.answers === 'string') {
+                                    answers = JSON.parse(res.answers);
+                                } else if (typeof res.answers === 'object') {
+                                    answers = res.answers;
+                                }
+                            }
+                            if (typeof answers !== 'object' || answers === null) answers = {};
+                        } catch (e) {
+                            answers = {};
+                        }
+
                         const orderNumber = index + 1;
+                        const dateFormatted = res.date ? format(new Date(res.date), 'd MMMM yyyy, HH:mm', { locale: pl }) : '---';
+                        const offerTitle = res.offer?.title || 'Nieznana oferta';
+
+                        // Fix for Prisma Decimal or undefined price
+                        const price = res.totalPrice ? String(res.totalPrice) : '---';
 
                         return (
                             <div key={res.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all">
@@ -72,13 +91,13 @@ export default async function ReservationsPage() {
                                             </div>
                                             <div>
                                                 <h3 className="text-xl font-bold text-dark flex items-center gap-2">
-                                                    {res.clientName}
+                                                    {res.clientName || 'Klient'}
                                                     <span className="text-sm font-mono text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">#{res.code}</span>
                                                 </h3>
                                                 <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
-                                                    <span className="font-semibold text-primary">{res.offer.title}</span>
+                                                    <span className="font-semibold text-primary">{offerTitle}</span>
                                                     <span>•</span>
-                                                    <span className="flex items-center gap-1"><Clock size={14} /> {format(new Date(res.date), 'd MMMM yyyy, HH:mm', { locale: pl })}</span>
+                                                    <span className="flex items-center gap-1"><Clock size={14} /> {dateFormatted}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -101,16 +120,16 @@ export default async function ReservationsPage() {
                                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Dane kontaktowe</h4>
                                             <div className="space-y-2">
                                                 <a href={`mailto:${res.clientEmail}`} className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary transition-colors">
-                                                    <Mail size={16} /> {res.clientEmail}
+                                                    <Mail size={16} /> {res.clientEmail || 'Brak email'}
                                                 </a>
                                                 <a href={`tel:${res.clientPhone}`} className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary transition-colors">
-                                                    <Phone size={16} /> {res.clientPhone}
+                                                    <Phone size={16} /> {res.clientPhone || 'Brak telefonu'}
                                                 </a>
                                             </div>
                                         </div>
                                         <div>
                                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Szczegóły płatności</h4>
-                                            <p className="text-lg font-bold text-dark">{res.totalPrice}</p>
+                                            <p className="text-lg font-bold text-dark">{price}</p>
                                             <p className="text-xs text-gray-500 mt-1">Metoda: Płatność przy sesji</p>
                                         </div>
                                         <div>
@@ -120,7 +139,7 @@ export default async function ReservationsPage() {
                                                     {Object.entries(answers).map(([q, a], i) => (
                                                         <div key={i} className="text-sm">
                                                             <span className="text-gray-400 block text-[10px]">{q}</span>
-                                                            <span className="text-gray-700">{a as string}</span>
+                                                            <span className="text-gray-700">{typeof a === 'string' ? a : JSON.stringify(a)}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -158,9 +177,3 @@ export default async function ReservationsPage() {
         </div>
     );
 }
-
-function ShoppingBag({ size }: { size: number }) {
-    return <BriefcaseBusiness size={size} />;
-}
-import { BriefcaseBusiness } from 'lucide-react';
-import DeleteReservationButton from '@/app/admin/components/DeleteReservationButton';
