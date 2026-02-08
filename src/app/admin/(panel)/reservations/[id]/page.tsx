@@ -65,7 +65,7 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
                                     <Tag size={18} className="text-primary" />
-                                    <span className="font-bold text-dark">{res.offer.title}</span>
+                                    <span className="font-bold text-dark">{res.offer?.title || 'Nieznana oferta'}</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-gray-600">
                                     <Calendar size={18} />
@@ -94,7 +94,7 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Konfiguracja</h3>
                             <div className="p-4 bg-white rounded-2xl border border-gray-200">
                                 <p className="text-xs text-gray-400 mb-1">Cena końcowa</p>
-                                <p className="text-2xl font-black text-primary">{res.totalPrice}</p>
+                                <p className="text-2xl font-black text-primary">{String(res.totalPrice)}</p>
                             </div>
                         </div>
                     </div>
