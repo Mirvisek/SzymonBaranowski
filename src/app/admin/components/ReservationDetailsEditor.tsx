@@ -56,16 +56,16 @@ export default function ReservationDetailsEditor({
     }
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh]">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
                     <h3 className="text-xl font-bold text-dark">Edytuj rezerwację</h3>
                     <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600">
                         <X size={24} />
                     </button>
                 </div>
 
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-4 overflow-y-auto">
                     <div>
                         <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Data</label>
                         <div className="relative">
@@ -107,13 +107,13 @@ export default function ReservationDetailsEditor({
                     </div>
                 </div>
 
-                <div className="p-6 bg-gray-50 flex gap-3">
+                <div className="p-6 bg-gray-50 flex gap-3 shrink-0 rounded-b-3xl">
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
                         className="flex-1 flex items-center justify-center gap-2 py-3 bg-primary text-white rounded-xl font-bold hover:bg-dark transition-colors disabled:opacity-50"
                     >
-                        {isSaving ? 'Zapisywanie...' : <><Save size={18} /> Zapisz zmiany</>}
+                        {isSaving ? 'Zapisywanie...' : <><Save size={18} /> Zapisz</>}
                     </button>
                     <button
                         onClick={() => setIsEditing(false)}
