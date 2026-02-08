@@ -72,8 +72,8 @@ model DiscountCode {
 
 model Reservation {
   id             String        @id @default(uuid())
-  code           String        @unique // Alfanumeryczny kod rezerwacji
-  password       String        // Hasło dostępu dla klienta
+  code           String?       @unique // Alfanumeryczny kod rezerwacji
+  password       String?       // Hasło dostępu dla klienta
   offerId        String
   offer          OfferServices @relation(fields: [offerId], references: [id])
   date           DateTime
