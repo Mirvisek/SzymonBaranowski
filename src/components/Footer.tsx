@@ -15,6 +15,11 @@ export default async function Footer() {
                         <p className="text-sm leading-relaxed">
                             {settings.site_description || 'Profesjonalna fotografia, grafika i marketing. Pomagam budować wizerunek i łapać chwile.'}
                         </p>
+                        {settings.footer_copyright && (
+                            <p className="text-xs mt-4 text-white/60 leading-relaxed">
+                                {settings.footer_copyright}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <h4 className="text-lg font-semibold text-white mb-4">Linki</h4>
