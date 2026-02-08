@@ -59,7 +59,7 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                 {/* Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3">
                     {/* Sidebar - natural height */}
-                    <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/50 space-y-8">
+                    <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/50 flex flex-col gap-8">
                         <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Informacje</h3>
                             <div className="space-y-4">
@@ -90,7 +90,7 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                             </div>
                         </div>
 
-                        <div>
+                        <div className="mt-auto">
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Konfiguracja</h3>
                             <div className="p-4 bg-white rounded-2xl border border-gray-200">
                                 <p className="text-xs text-gray-400 mb-1">Cena końcowa</p>
