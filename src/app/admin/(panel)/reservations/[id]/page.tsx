@@ -29,22 +29,25 @@ export default async function AdminReservationDetailPage({ params }: { params: P
     }
 
     return (
-        <div className="max-w-6xl mx-auto pt-24 px-4 pb-12">
-            <Link href="/admin/reservations" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary mb-6 transition-colors font-medium">
-                <ChevronLeft size={20} /> Powrót do listy
-            </Link>
+        <div className="flex flex-col h-[calc(100vh-100px)] max-w-7xl mx-auto px-4 pt-4 pb-2">
+            <div className="shrink-0 mb-4">
+                <Link href="/admin/reservations" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary transition-colors font-medium">
+                    <ChevronLeft size={20} /> Powrót do listy
+                </Link>
+            </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-8 border-b border-gray-100 flex flex-wrap justify-between items-center gap-4">
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col flex-1 min-h-0">
+                {/* Header */}
+                <div className="p-6 md:p-8 border-b border-gray-100 flex flex-wrap justify-between items-center gap-4 shrink-0 bg-white z-10">
                     <div>
                         <div className="flex items-center gap-3 mb-1">
                             <span className="text-sm font-mono text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">#{res.code}</span>
-                            <h1 className="text-3xl font-bold text-dark">{res.clientName}</h1>
+                            <h1 className="text-2xl md:text-3xl font-bold text-dark">{res.clientName}</h1>
                         </div>
-                        <p className="text-gray-500">Zarządzaj rezerwacją i rozmawiaj z klientem.</p>
+                        <p className="text-gray-500 text-sm md:text-base">Zarządzaj rezerwacją i rozmawiaj z klientem.</p>
                     </div>
 
-                    <div className="mt-6 md:mt-0 w-full md:w-auto">
+                    <div className="w-full md:w-auto">
                         <ReservationDetailsEditor
                             reservationId={res.id}
                             initialDate={res.date}
@@ -53,8 +56,10 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3">
-                    <div className="p-8 border-r border-gray-100 bg-gray-50/50 space-y-8">
+                {/* Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 flex-1 min-h-0 overflow-hidden">
+                    {/* Sidebar - scrollable */}
+                    <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/50 space-y-8 overflow-y-auto custom-scrollbar">
                         <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Informacje</h3>
                             <div className="space-y-4">
@@ -94,16 +99,21 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                         </div>
                     </div>
 
-                    <div className="lg:col-span-2 flex flex-col h-[700px]">
-                        <div className="p-6 border-b border-gray-100 flex items-center gap-3 bg-white">
+                    {/* Chat Section - takes remaining height */}
+                    <div className="lg:col-span-2 flex flex-col h-full bg-white relative">
+                        <div className="p-4 md:p-6 border-b border-gray-100 flex items-center gap-3 shrink-0">
                             <MessageSquare className="text-primary" size={20} />
-                            <h2 className="text-xl font-bold text-dark">Wiadomości z klientem</h2>
+                            <h2 className="text-lg md:text-xl font-bold text-dark">Wiadomości z klientem</h2>
                         </div>
-                        <ReservationChat
-                            reservationId={res.id}
-                            initialMessages={res.messages}
-                            role="admin"
-                        />
+                        <div className="flex-1 min-h-0 overflow-hidden relative">
+                            <div className="absolute inset-0">
+                                <ReservationChat
+                                    reservationId={res.id}
+                                    initialMessages={res.messages}
+                                    role="admin"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
