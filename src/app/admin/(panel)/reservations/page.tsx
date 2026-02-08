@@ -1,12 +1,10 @@
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { Calendar, Mail, Phone, Clock, Trash2, CheckCircle, XCircle, AlertCircle, MessageSquare } from 'lucide-react';
 import { deleteReservation, updateReservationStatus } from '@/app/lib/reservation-actions';
 import Link from 'next/link';
-
-const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
@@ -70,7 +68,7 @@ export default async function ReservationsPage() {
                                         <div className="flex gap-4">
                                             <div className="w-12 h-12 bg-dark text-white rounded-xl flex flex-col items-center justify-center font-mono text-sm leading-none flex-shrink-0">
                                                 <span className="text-[10px] text-white/50 mb-1">{orderNumber}</span>
-                                                <span className="font-bold">{res.code.slice(0, 3)}</span>
+                                                <span className="font-bold">{res.code ? res.code.slice(0, 3) : '---'}</span>
                                             </div>
                                             <div>
                                                 <h3 className="text-xl font-bold text-dark flex items-center gap-2">

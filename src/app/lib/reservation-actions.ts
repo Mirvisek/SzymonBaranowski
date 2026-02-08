@@ -1,12 +1,10 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { sendReservationEmail, sendStatusUpdateEmail } from './email';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
-
-const prisma = new PrismaClient();
 
 function generateReservationCode(length = 10) {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -102,7 +100,8 @@ export async function deleteReservation(id: string) {
         revalidatePath('/admin/reservations');
         return { success: true };
     } catch (error) {
-        return { success: false, message: 'Nie udało się usunąć rezerwacji.' };
+        console.error('Błąd podczas usuwania rezerwacji:', error);
+        return { success: false, message: 'Nie udało się usunąć rezerwacji z bazy danych.' };
     }
 }
 
