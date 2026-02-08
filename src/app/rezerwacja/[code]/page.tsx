@@ -47,9 +47,7 @@ export default async function ReservationManagementPage({ params }: { params: Pr
     return (
         <ReservationAccessGuard reservationCode={reservation.code} correctPassword={reservation.password}>
             <main className="min-h-screen bg-gray-50">
-                <Navbar />
-
-                <div className="pt-28 pb-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="pt-10 pb-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                         {/* Header */}
                         <div className="bg-dark p-8 md:p-12 text-white">
