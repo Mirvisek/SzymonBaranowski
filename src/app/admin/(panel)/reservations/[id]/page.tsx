@@ -29,7 +29,7 @@ export default async function AdminReservationDetailPage({ params }: { params: P
     }
 
     return (
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto pt-24 px-4 pb-12">
             <Link href="/admin/reservations" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary mb-6 transition-colors font-medium">
                 <ChevronLeft size={20} /> Powrót do listy
             </Link>
@@ -44,11 +44,13 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                         <p className="text-gray-500">Zarządzaj rezerwacją i rozmawiaj z klientem.</p>
                     </div>
 
-                    <ReservationDetailsEditor
-                        reservationId={res.id}
-                        initialDate={res.date}
-                        initialPrice={res.totalPrice || ''}
-                    />
+                    <div className="mt-6 md:mt-0 w-full md:w-auto">
+                        <ReservationDetailsEditor
+                            reservationId={res.id}
+                            initialDate={res.date}
+                            initialPrice={res.totalPrice || ''}
+                        />
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3">
