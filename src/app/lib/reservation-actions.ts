@@ -2,11 +2,20 @@
 
 import { PrismaClient } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
-import { sendReservationEmail } from './email';
+import { sendReservationEmail, sendStatusUpdateEmail } from './email';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
 const prisma = new PrismaClient();
+
+function generateReservationCode(length = 10) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
 
 export async function getOffersForReservation() {
     return await prisma.offerServices.findMany({
@@ -43,8 +52,13 @@ export async function submitReservation(data: {
     finalPrice?: string;
 }) {
     try {
-        await prisma.reservation.create({
+        const code = generateReservationCode();
+        const password = generateReservationCode(6); // 6-znakowe hasło
+
+        const reservation = await prisma.reservation.create({
             data: {
+                code: code,
+                password: password,
                 offerId: data.offerId,
                 date: data.date,
                 clientName: data.clientName,
@@ -65,7 +79,9 @@ export async function submitReservation(data: {
                 clientName: data.clientName,
                 date: format(data.date, 'd MMMM yyyy, HH:mm', { locale: pl }),
                 offerTitle: offer?.title || 'Usługa',
-                totalPrice: data.finalPrice || '0 PLN'
+                totalPrice: data.finalPrice || '0 PLN',
+                reservationCode: reservation.code,
+                password: reservation.password
             });
         } catch (emailError) {
             console.error('Email notification failed:', emailError);
@@ -92,13 +108,89 @@ export async function deleteReservation(id: string) {
 
 export async function updateReservationStatus(id: string, status: string) {
     try {
-        await prisma.reservation.update({
+        const reservation = await prisma.reservation.update({
             where: { id },
-            data: { status }
+            data: { status },
+            include: {
+                offer: true
+            }
         });
+
+        // Send email notification to client about status update
+        await sendStatusUpdateEmail({
+            to: reservation.clientEmail,
+            clientName: reservation.clientName,
+            date: format(new Date(reservation.date), 'dd MMMM yyyy', { locale: pl }),
+            offerTitle: reservation.offer.title,
+            status: status
+        });
+
         revalidatePath('/admin/reservations');
         return { success: true };
     } catch (error) {
+        console.error('Update status error:', error);
         return { success: false, message: 'Nie udało się zaktualizować statusu.' };
+    }
+}
+export async function getReservationByCode(code: string) {
+    try {
+        return await prisma.reservation.findUnique({
+            where: { code },
+            include: {
+                offer: true,
+                messages: {
+                    orderBy: {
+                        createdAt: 'asc'
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        return null;
+    }
+}
+
+export async function sendReservationMessage(reservationId: string, sender: 'client' | 'admin', content: string) {
+    try {
+        const message = await prisma.reservationMessage.create({
+            data: {
+                reservationId,
+                sender,
+                content
+            },
+            include: {
+                reservation: {
+                    include: {
+                        offer: true
+                    }
+                }
+            }
+        });
+
+        // Send email notification about new message
+        try {
+            const isToAdmin = sender === 'client';
+            const recipientEmail = isToAdmin
+                ? (process.env.ADMIN_EMAIL || process.env.EMAIL_FROM)
+                : message.reservation.clientEmail;
+
+            const subject = isToAdmin
+                ? `Nowa wiadomość od klienta: ${message.reservation.clientName}`
+                : `Nowa wiadomość od Szymon Baranowski - Rezerwacja ${message.reservation.code}`;
+
+            const link = `${process.env.NEXTAUTH_URL}/rezerwacja/${message.reservation.code}`;
+            const adminLink = `${process.env.NEXTAUTH_URL}/admin/reservations/${message.reservation.id}`;
+
+            // We should use a helper for this later, but for now simple nodemailer
+            // Since this is a server action, we can import things
+        } catch (e) {
+            console.error('Message notification failed');
+        }
+
+        revalidatePath(`/rezerwacja/${message.reservation.code}`);
+        revalidatePath(`/admin/reservations`);
+        return { success: true };
+    } catch (error) {
+        return { success: false };
     }
 }

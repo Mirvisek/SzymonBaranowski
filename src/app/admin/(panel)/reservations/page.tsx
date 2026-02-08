@@ -2,8 +2,9 @@
 import { PrismaClient } from '@prisma/client';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
-import { Calendar, Mail, Phone, Clock, Trash2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Mail, Phone, Clock, Trash2, CheckCircle, XCircle, AlertCircle, MessageSquare } from 'lucide-react';
 import { deleteReservation, updateReservationStatus } from '@/app/lib/reservation-actions';
+import Link from 'next/link';
 
 const prisma = new PrismaClient();
 
@@ -58,25 +59,24 @@ export default async function ReservationsPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6">
-                    {reservations.map((res) => {
+                    {reservations.map((res: any, index) => {
                         const answers = res.answers ? JSON.parse(res.answers) : {};
+                        const orderNumber = index + 1;
 
                         return (
-                            <div key={res.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                            <div key={res.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all">
                                 <div className="p-6">
                                     <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
                                         <div className="flex gap-4">
-                                            <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden hidden sm:block">
-                                                {res.offer.imageUrl ? (
-                                                    <img src={res.offer.imageUrl} alt="" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                        <ShoppingBag size={24} />
-                                                    </div>
-                                                )}
+                                            <div className="w-12 h-12 bg-dark text-white rounded-xl flex flex-col items-center justify-center font-mono text-sm leading-none flex-shrink-0">
+                                                <span className="text-[10px] text-white/50 mb-1">{orderNumber}</span>
+                                                <span className="font-bold">{res.code.slice(0, 3)}</span>
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-bold text-dark">{res.clientName}</h3>
+                                                <h3 className="text-xl font-bold text-dark flex items-center gap-2">
+                                                    {res.clientName}
+                                                    <span className="text-sm font-mono text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">#{res.code}</span>
+                                                </h3>
                                                 <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
                                                     <span className="font-semibold text-primary">{res.offer.title}</span>
                                                     <span>•</span>
@@ -84,9 +84,17 @@ export default async function ReservationsPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={`px-4 py-1.5 rounded-full text-xs font-bold border flex items-center gap-2 uppercase tracking-wider ${getStatusStyle(res.status)}`}>
-                                            {getStatusIcon(res.status)}
-                                            {res.status === 'pending' ? 'Oczekujący' : res.status === 'confirmed' ? 'Potwierdzony' : 'Anulowany'}
+                                        <div className="flex items-center gap-2">
+                                            <div className={`px-4 py-1.5 rounded-full text-xs font-bold border flex items-center gap-2 uppercase tracking-wider ${getStatusStyle(res.status)}`}>
+                                                {getStatusIcon(res.status)}
+                                                {res.status === 'pending' ? 'Oczekujący' : res.status === 'confirmed' ? 'Potwierdzony' : 'Anulowany'}
+                                            </div>
+                                            <Link
+                                                href={`/admin/reservations/${res.id}`}
+                                                className="p-2 bg-gray-50 border border-gray-100 text-gray-600 rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center gap-2 text-sm font-bold"
+                                            >
+                                                <MessageSquare size={16} /> Wiadomości
+                                            </Link>
                                         </div>
                                     </div>
 
@@ -141,11 +149,7 @@ export default async function ReservationsPage() {
                                                 </form>
                                             )}
                                         </div>
-                                        <form action={async () => { 'use server'; if (confirm('Czy na pewno chcesz usunąć tę rezerwację?')) await deleteReservation(res.id); }}>
-                                            <button type="submit" className="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg text-sm font-semibold transition-colors">
-                                                <Trash2 size={16} /> Usuń trwale
-                                            </button>
-                                        </form>
+                                        <DeleteReservationButton reservationId={res.id} />
                                     </div>
                                 </div>
                             </div>
@@ -161,3 +165,4 @@ function ShoppingBag({ size }: { size: number }) {
     return <BriefcaseBusiness size={size} />;
 }
 import { BriefcaseBusiness } from 'lucide-react';
+import DeleteReservationButton from '@/app/admin/components/DeleteReservationButton';

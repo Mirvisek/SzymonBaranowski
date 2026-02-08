@@ -53,6 +53,12 @@ export default async function DashboardPage() {
                 {/* Decorative circle */}
                 <div className="absolute -right-10 -bottom-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl"></div>
             </div>
+
+            <CalendarSyncSection
+                feedUrl={`${process.env.NEXTAUTH_URL}/api/admin/calendar?token=${process.env.CALENDAR_FEED_TOKEN || 'set_token_in_env'}`}
+            />
         </div>
     );
 }
+
+import CalendarSyncSection from '../../components/CalendarSyncSection';

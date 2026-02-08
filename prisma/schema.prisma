@@ -72,6 +72,8 @@ model DiscountCode {
 
 model Reservation {
   id             String        @id @default(uuid())
+  code           String        @unique // Alfanumeryczny kod rezerwacji
+  password       String        // Hasło dostępu dla klienta
   offerId        String
   offer          OfferServices @relation(fields: [offerId], references: [id])
   date           DateTime
@@ -82,8 +84,21 @@ model Reservation {
   answers        String?       // JSON string of Q&A
   discountCodeId String?
   totalPrice     String?
+  messages       ReservationMessage[]
   createdAt      DateTime      @default(now())
 }
+
+model ReservationMessage {
+  id            String      @id @default(uuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  sender        String      // 'admin' lub 'client'
+  content       String
+  isAdminRead   Boolean     @default(false)
+  isClientRead  Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+}
+
 
 model HeroSlide {
   id          String   @id @default(uuid())

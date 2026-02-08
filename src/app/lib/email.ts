@@ -17,8 +17,11 @@ export async function sendReservationEmail(data: {
     date: string;
     offerTitle: string;
     totalPrice: string;
+    reservationCode: string;
+    password: string;
 }) {
-    const { to, clientName, date, offerTitle, totalPrice } = data;
+    const { to, clientName, date, offerTitle, totalPrice, reservationCode, password } = data;
+    const managementLink = `${process.env.NEXTAUTH_URL}/rezerwacja/${reservationCode}`;
 
     const mailOptions = {
         from: `"Szymon Baranowski" <${process.env.EMAIL_FROM}>`,
@@ -37,6 +40,12 @@ export async function sendReservationEmail(data: {
 
                 <p>Obecnie rezerwacja ma status <strong>Oczekująca</strong>. Wyślemy Ci kolejne powiadomienie, gdy tylko potwierdzimy termin.</p>
                 
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${managementLink}" style="background-color: #333; color: #fff; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;">Zarządzaj swoją rezerwacją</a>
+                    <p style="font-size: 14px; color: #333; margin-top: 15px;">Twoje hasło do strony: <strong style="font-size: 18px; color: #E63946;">${password}</strong></p>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">Hasło będzie potrzebne do zalogowania się na stronie zarządzania.</p>
+                </div>
+
                 <p>W razie pytań, prosimy o kontakt:<br/>
                 Email: ${process.env.EMAIL_FROM}<br/>
                 Telefon: ${process.env.SITE_PHONE || '+48 000 000 000'}</p>
@@ -61,6 +70,68 @@ export async function sendReservationEmail(data: {
         return { success: true };
     } catch (error) {
         console.error('Email sending failed:', error);
+        return { success: false, error };
+    }
+}
+
+export async function sendStatusUpdateEmail(data: {
+    to: string;
+    clientName: string;
+    date: string;
+    offerTitle: string;
+    status: string;
+}) {
+    const { to, clientName, date, offerTitle, status } = data;
+
+    let statusText = '';
+    let statusColor = '#333';
+    let extraMessage = '';
+
+    if (status === 'confirmed') {
+        statusText = 'POTWIERDZONA';
+        statusColor = '#10B981'; // Green
+        extraMessage = 'Cieszymy się, że będziemy mogli współpracować! Twój termin został oficjalnie zarezerwowany.';
+    } else if (status === 'cancelled') {
+        statusText = 'ANULOWANA';
+        statusColor = '#EF4444'; // Red
+        extraMessage = 'Z przykrością informujemy, że Twoja rezerwacja została anulowana. Jeśli masz pytania, skontaktuj się z nami.';
+    } else {
+        statusText = 'ZMIENIONA';
+        statusColor = '#F59E0B'; // Amber
+        extraMessage = 'Status Twojej rezerwacji uległ zmianie.';
+    }
+
+    const mailOptions = {
+        from: `"Szymon Baranowski" <${process.env.EMAIL_FROM}>`,
+        to: to,
+        subject: `Aktualizacja statusu rezerwacji: ${statusText}`,
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+                <h2 style="color: ${statusColor};">Aktualizacja Twojej rezerwacji</h2>
+                <p>Cześć <strong>${clientName}</strong>,</p>
+                <p>Informujemy, że status Twojej rezerwacji na usługę <strong>${offerTitle}</strong> (termin: ${date}) został zmieniony na:</p>
+                
+                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid ${statusColor};">
+                    <p style="margin: 0; font-size: 18px; font-bold: bold; color: ${statusColor};"><strong>STATUS: ${statusText}</strong></p>
+                </div>
+
+                <p>${extraMessage}</p>
+                
+                <p>W razie pytań, prosimy o kontakt:<br/>
+                Email: ${process.env.EMAIL_FROM}<br/>
+                Telefon: ${process.env.SITE_PHONE || '+48 000 000 000'}</p>
+                
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+                <p style="font-size: 12px; color: #999; text-align: center;">Ta wiadomość została wysłana automatycznie przez system rezerwacji szymonbaranowski.pl</p>
+            </div>
+        `,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        return { success: true };
+    } catch (error) {
+        console.error('Status email sending failed:', error);
         return { success: false, error };
     }
 }
