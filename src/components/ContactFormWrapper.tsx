@@ -26,8 +26,8 @@ export default function ContactFormWrapper() {
 
             {state?.message && (
                 <div className={`mb-6 p-4 rounded-xl text-sm font-bold ${state.message.startsWith('success')
-                        ? 'bg-green-50 text-green-600 border border-green-100'
-                        : 'bg-red-50 text-red-600 border border-red-100'
+                    ? 'bg-green-50 text-green-600 border border-green-100'
+                    : 'bg-red-50 text-red-600 border border-red-100'
                     }`}>
                     {state.message.replace('success: ', '').replace('error: ', '')}
                 </div>
@@ -35,7 +35,7 @@ export default function ContactFormWrapper() {
 
             <form action={formAction} ref={formRef} className="space-y-6">
                 <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Imię i nazwisko</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Imię i nazwisko <span className="text-red-500">*</span></label>
                     <input
                         type="text"
                         id="name"
@@ -46,7 +46,7 @@ export default function ContactFormWrapper() {
                     />
                 </div>
                 <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email <span className="text-red-500">*</span></label>
                     <input
                         type="email"
                         id="email"
@@ -57,18 +57,19 @@ export default function ContactFormWrapper() {
                     />
                 </div>
                 <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">Temat</label>
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">Temat <span className="text-red-500">*</span></label>
                     <input
                         type="text"
                         id="subject"
                         name="subject"
+                        required
                         defaultValue={subject}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                         placeholder="W czym mogę pomóc?"
                     />
                 </div>
                 <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Wiadomość</label>
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Wiadomość <span className="text-red-500">*</span></label>
                     <textarea
                         id="message"
                         name="message"

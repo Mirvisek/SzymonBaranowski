@@ -392,7 +392,7 @@ export async function sendContactMessage(prevState: any, formData: FormData) {
     const subject = formData.get('subject') as string;
     const message = formData.get('message') as string;
 
-    if (!name || !email || !message) {
+    if (!name || !email || !subject || !message) {
         return { message: 'Proszę wypełnić wszystkie wymagane pola.' };
     }
 
@@ -405,7 +405,7 @@ export async function sendContactMessage(prevState: any, formData: FormData) {
                 message,
             },
         });
-        return { message: 'success: Wiadomość została wysłana! Odpowiemy najszybciej jak to możliwe.' };
+        return { message: 'success: Wiadomość została wysłana! Odpowiem najszybciej jak to możliwe.' };
     } catch (error: any) {
         console.error(error);
         return { message: `error: Błąd wysyłania: ${error instanceof Error ? error.message : 'Wystąpił nieoczekiwany błąd'}` };
