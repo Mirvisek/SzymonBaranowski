@@ -60,8 +60,8 @@ export async function createPortfolioItem(prevState: any, formData: FormData) {
                 order: newOrder
             },
         });
-    } catch (error) {
-        return { message: 'Database Error: Failed to Create Portfolio Item.' };
+    } catch (error: any) {
+        return { message: `Błąd bazy danych: ${error instanceof Error ? error.message : 'Nie udało się dodać zdjęcia'}` };
     }
 
     revalidatePath('/portfolio');
@@ -86,8 +86,8 @@ export async function createPortfolioCategory(prevState: any, formData: FormData
                 imageUrl
             }
         });
-    } catch (error) {
-        return { message: 'Error creating category' };
+    } catch (error: any) {
+        return { message: `Błąd podczas tworzenia kategorii: ${error instanceof Error ? error.message : 'Nieoczekiwany błąd'}` };
     }
 
     revalidatePath('/portfolio');
@@ -101,8 +101,8 @@ export async function deletePortfolioCategory(id: string) {
         revalidatePath('/portfolio');
         revalidatePath('/admin/categories');
         revalidatePath('/admin/portfolio');
-    } catch (e) {
-        throw new Error('Failed to delete category');
+    } catch (error: any) {
+        throw new Error(`Błąd usuwania kategorii: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
     }
 }
 
@@ -113,8 +113,8 @@ export async function deletePortfolioItem(id: string) {
         });
         revalidatePath('/portfolio');
         revalidatePath('/admin/portfolio');
-    } catch (error) {
-        throw new Error('Database Error: Failed to Delete Portfolio Item.');
+    } catch (error: any) {
+        throw new Error(`Błąd bazy danych: ${error instanceof Error ? error.message : 'Nie udało się usunąć zdjęcia'}`);
     }
 }
 
@@ -381,9 +381,9 @@ export async function sendContactMessage(prevState: any, formData: FormData) {
             },
         });
         return { message: 'success: Wiadomość została wysłana! Odpowiemy najszybciej jak to możliwe.' };
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        return { message: 'error: Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie.' };
+        return { message: `error: Błąd wysyłania: ${error instanceof Error ? error.message : 'Wystąpił nieoczekiwany błąd'}` };
     }
 }
 
@@ -391,8 +391,8 @@ export async function deleteMessage(id: string) {
     try {
         await prisma.contactMessage.delete({ where: { id } });
         revalidatePath('/admin/messages');
-    } catch (error) {
-        throw new Error('Failed to delete message');
+    } catch (error: any) {
+        throw new Error(`Błąd usuwania wiadomości: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
     }
 }
 
@@ -403,8 +403,8 @@ export async function toggleMessageReadStatus(id: string, currentStatus: boolean
             data: { isRead: !currentStatus }
         });
         revalidatePath('/admin/messages');
-    } catch (error) {
-        throw new Error('Failed to update message status');
+    } catch (error: any) {
+        throw new Error(`Błąd aktualizacji statusu: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
     }
 }
 
@@ -423,8 +423,8 @@ export async function createFAQ(prevState: any, formData: FormData) {
                 answer,
             },
         });
-    } catch (error) {
-        return { message: 'Database Error: Failed to Create FAQ.' };
+    } catch (error: any) {
+        return { message: `Błąd bazy danych: ${error instanceof Error ? error.message : 'Nie udało się dodać pytania'}` };
     }
 
     revalidatePath('/oferta');
@@ -437,7 +437,7 @@ export async function deleteFAQ(id: string) {
         await prisma.fAQItem.delete({ where: { id } });
         revalidatePath('/oferta');
         revalidatePath('/admin/faq');
-    } catch (error) {
-        throw new Error('Failed to delete FAQ');
+    } catch (error: any) {
+        throw new Error(`Błąd usuwania pytania: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
     }
 }

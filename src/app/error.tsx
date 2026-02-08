@@ -22,9 +22,20 @@ export default function Error({
                 <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
                     <AlertTriangle size={48} className="text-red-600" />
                 </div>
-                <h1 className="text-4xl font-black text-dark mb-4">Ups! Coś poszło nie tak</h1>
+                <h1 className="text-4xl font-black text-dark mb-4">Wystąpił błąd aplikacji</h1>
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 text-left inline-block w-full">
+                    <p className="text-red-700 font-bold mb-1">Szczegóły błędu:</p>
+                    <p className="text-red-600 text-sm font-mono break-all italic">
+                        {error.message || 'Nieoczekiwany wyjątek serwera (Internal Server Error)'}
+                    </p>
+                    {error.digest && (
+                        <p className="text-xs text-gray-400 mt-2 font-mono">
+                            ID błędu: {error.digest}
+                        </p>
+                    )}
+                </div>
                 <p className="text-gray-500 mb-10 leading-relaxed">
-                    Wystąpił nieoczekiwany błąd. Został on zarejestrowany i postaramy się go naprawić jak najszybciej.
+                    Przepraszamy za utrudnienia. Możesz spróbować odświeżyć stronę lub wrócić do panelu głównego.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button

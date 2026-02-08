@@ -99,9 +99,10 @@ export async function deleteReservation(id: string) {
         await prisma.reservation.delete({ where: { id } });
         revalidatePath('/admin/reservations');
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Błąd podczas usuwania rezerwacji:', error);
-        return { success: false, message: 'Nie udało się usunąć rezerwacji z bazy danych.' };
+        const errorMessage = error instanceof Error ? error.message : 'Nieznany błąd bazy danych';
+        return { success: false, message: `Błąd systemowy: ${errorMessage}` };
     }
 }
 

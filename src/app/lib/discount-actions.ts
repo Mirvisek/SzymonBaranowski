@@ -30,9 +30,10 @@ export async function createDiscountCode(prevState: any, formData: FormData) {
         });
         revalidatePath('/admin/settings');
         return { message: 'Kod dodany pomyślnie!', success: true };
-    } catch (e) {
-        console.error(e);
-        return { message: 'Kod o tej nazwie już istnieje lub wystąpił błąd.' };
+    } catch (error: any) {
+        console.error(error);
+        const errorMessage = error instanceof Error ? error.message : 'Nieznany błąd';
+        return { message: `Błąd podczas dodawania kodu: ${errorMessage}` };
     }
 }
 
