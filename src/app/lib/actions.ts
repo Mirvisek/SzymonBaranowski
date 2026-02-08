@@ -347,20 +347,27 @@ export async function createTestimonial(prevState: any, formData: FormData) {
     const role = formData.get('role') as string;
     const content = formData.get('content') as string;
 
+    console.log('Creating testimonial:', { author, role, content });
+
     if (!author || !content) {
-        return { message: 'Missing required fields' };
+        return { message: 'Brak wymaganych pól (autor i treść)' };
     }
 
     try {
-        await prisma.testimonial.create({
+        const testimonial = await prisma.testimonial.create({
             data: {
                 author,
-                role,
+                role: role || null,
                 content,
             },
         });
+        console.log('Testimonial created successfully:', testimonial.id);
     } catch (error) {
-        return { message: 'Database Error: Failed to Create Testimonial.' };
+        console.error('Database Error creating testimonial:', error);
+        if (error instanceof Error) {
+            return { message: `Błąd bazy danych: ${error.message}` };
+        }
+        return { message: 'Błąd bazy danych: Nie udało się utworzyć opinii.' };
     }
 
     revalidatePath('/');
