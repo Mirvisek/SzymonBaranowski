@@ -220,3 +220,16 @@ export async function sendReservationMessage(reservationId: string, sender: 'cli
         return { success: false };
     }
 }
+
+export async function updateTypingStatus(reservationId: string, role: 'admin' | 'client') {
+    try {
+        const field = role === 'admin' ? 'lastAdminTypingAt' : 'lastClientTypingAt';
+        await prisma.reservation.update({
+            where: { id: reservationId },
+            data: { [field]: new Date() }
+        });
+        return { success: true };
+    } catch (error) {
+        return { success: false };
+    }
+}

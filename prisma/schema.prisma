@@ -85,6 +85,8 @@ model Reservation {
   discountCodeId String?
   totalPrice     String?
   messages       ReservationMessage[]
+  lastAdminTypingAt  DateTime?
+  lastClientTypingAt DateTime?
   createdAt      DateTime      @default(now())
 }
 

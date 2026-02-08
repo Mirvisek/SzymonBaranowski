@@ -101,6 +101,8 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                             reservationId={res.id}
                             initialMessages={res.messages}
                             role="admin"
+                            lastAdminTypingAt={res.lastAdminTypingAt}
+                            lastClientTypingAt={res.lastClientTypingAt}
                         />
                     </div>
                 </div>

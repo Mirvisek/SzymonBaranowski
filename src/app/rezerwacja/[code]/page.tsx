@@ -134,6 +134,8 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                                     reservationId={reservation.id}
                                     initialMessages={reservation.messages}
                                     role="client"
+                                    lastAdminTypingAt={reservation.lastAdminTypingAt}
+                                    lastClientTypingAt={reservation.lastClientTypingAt}
                                 />
                             </div>
                         </div>
@@ -143,8 +145,6 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                         Masz problem z rezerwacją? Skontaktuj się bezpośrednio pod adresem {process.env.EMAIL_FROM}
                     </p>
                 </div>
-
-                <Footer />
             </main>
         </ReservationAccessGuard>
     );
