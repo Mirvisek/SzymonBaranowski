@@ -52,6 +52,8 @@ export default function ContactFormWrapper() {
                         id="email"
                         name="email"
                         required
+                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                        title="Podaj poprawny adres email (np. nazwa@domena.pl)"
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                         placeholder="jan@example.com"
                     />

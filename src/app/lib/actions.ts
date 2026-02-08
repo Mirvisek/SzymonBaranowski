@@ -396,6 +396,12 @@ export async function sendContactMessage(prevState: any, formData: FormData) {
         return { message: 'Proszę wypełnić wszystkie wymagane pola.' };
     }
 
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        return { message: 'Podaj poprawny adres email (np. nazwa@domena.pl)' };
+    }
+
     try {
         await prisma.contactMessage.create({
             data: {
