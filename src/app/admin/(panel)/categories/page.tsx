@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { getPortfolioCategories } from '@/app/lib/data';
-import { deletePortfolioCategory } from '@/app/lib/actions';
-import { Plus, Trash2, Edit, FolderOpen } from 'lucide-react';
+import { Plus, Edit, FolderOpen } from 'lucide-react';
 import CategoryActions from '@/app/admin/(panel)/categories/CategoryActions';
+import DeleteCategoryButton from '@/app/admin/components/DeleteCategoryButton';
 
 export default async function CategoriesPage() {
     const categories = await getPortfolioCategories();
@@ -48,7 +48,14 @@ export default async function CategoriesPage() {
                             <div className="flex-1">
                                 <h3 className="text-2xl font-bold mb-1">{category.name}</h3>
                                 <p className="text-sm text-gray-500">Slug: {category.slug}</p>
-                                <p className="text-sm text-gray-500">Zdjęć: {category._count.items}</p>
+                                <p className="text-sm text-gray-500">
+                                    {category._count.items} {(() => {
+                                        const n = category._count.items;
+                                        if (n === 1) return 'zdjęcie';
+                                        if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'zdjęcia';
+                                        return 'zdjęć';
+                                    })()}
+                                </p>
                             </div>
 
                             {/* Actions */}
@@ -78,18 +85,10 @@ export default async function CategoriesPage() {
                                 </Link>
 
                                 {/* Delete */}
-                                <form action={async () => {
-                                    'use server';
-                                    await deletePortfolioCategory(category.id);
-                                }}>
-                                    <button
-                                        type="submit"
-                                        className="p-2 text-red-600 hover:text-red-800"
-                                        title="Usuń kategorię"
-                                    >
-                                        <Trash2 size={20} />
-                                    </button>
-                                </form>
+                                <DeleteCategoryButton
+                                    categoryId={category.id}
+                                    categoryName={category.name}
+                                />
                             </div>
                         </div>
                     ))}

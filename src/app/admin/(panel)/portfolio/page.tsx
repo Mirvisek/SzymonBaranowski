@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { getPortfolioCategories, getPortfolioItems } from '@/app/lib/data';
-import { deletePortfolioItem } from '@/app/lib/actions';
 import { movePortfolioItemUp, movePortfolioItemDown } from '@/app/lib/portfolio-actions';
-import { Plus, Trash2, ChevronUp, ChevronDown, FolderOpen } from 'lucide-react';
+import { Plus, ChevronUp, ChevronDown, FolderOpen } from 'lucide-react';
+import DeletePortfolioItemButton from '@/app/admin/components/DeletePortfolioItemButton';
 
 export default async function PortfolioAdminPage({
     searchParams
@@ -119,18 +119,7 @@ export default async function PortfolioAdminPage({
                                             </form>
 
                                             {/* Delete */}
-                                            <form action={async () => {
-                                                'use server';
-                                                await deletePortfolioItem(item.id);
-                                            }}>
-                                                <button
-                                                    type="submit"
-                                                    className="p-2 bg-red-500 rounded hover:bg-red-600"
-                                                    title="Usuń"
-                                                >
-                                                    <Trash2 size={16} className="text-white" />
-                                                </button>
-                                            </form>
+                                            <DeletePortfolioItemButton itemId={item.id} />
                                         </div>
                                     </div>
                                 </div>
@@ -162,7 +151,14 @@ export default async function PortfolioAdminPage({
                             </div>
                             <div className="p-4">
                                 <h3 className="text-xl font-bold mb-1">{category.name}</h3>
-                                <p className="text-sm text-gray-500">Zdjęć: {category._count.items}</p>
+                                <p className="text-sm text-gray-500">
+                                    {category._count.items} {(() => {
+                                        const n = category._count.items;
+                                        if (n === 1) return 'zdjęcie';
+                                        if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'zdjęcia';
+                                        return 'zdjęć';
+                                    })()}
+                                </p>
                             </div>
                         </Link>
                     ))}

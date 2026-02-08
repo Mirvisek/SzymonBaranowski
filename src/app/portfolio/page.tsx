@@ -59,7 +59,12 @@ export default async function Portfolio() {
                                         <div>
                                             <h3 className="text-2xl font-bold text-white mb-1">{category.name}</h3>
                                             <p className="text-white/80 text-sm">
-                                                {category._count.items} {category._count.items === 1 ? 'zdjęcie' : 'zdjęć'}
+                                                {category._count.items} {(() => {
+                                                    const n = category._count.items;
+                                                    if (n === 1) return 'zdjęcie';
+                                                    if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'zdjęcia';
+                                                    return 'zdjęć';
+                                                })()}
                                             </p>
                                         </div>
                                     </div>

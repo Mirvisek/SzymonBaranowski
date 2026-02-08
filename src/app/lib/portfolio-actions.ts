@@ -146,15 +146,28 @@ export async function updatePortfolioCategory(prevState: any, formData: FormData
 
     if (!id || !name) return { message: 'Missing required fields' };
 
-    const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    // Lepszy slug generator (obsługa polskich znaków)
+    const slugify = (text: string) => {
+        const charMap: { [key: string]: string } = {
+            'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+            'Ą': 'a', 'Ć': 'c', 'Ę': 'e', 'Ł': 'l', 'Ń': 'n', 'Ó': 'o', 'Ś': 's', 'Ź': 'z', 'Ż': 'z'
+        };
+        return text.split('').map(char => charMap[char] || char).join('')
+            .toLowerCase()
+            .replace(/ /g, '-')
+            .replace(/[^\w-]+/g, '');
+    };
+
+    const slug = slugify(name);
 
     try {
         await prisma.portfolioCategory.update({
             where: { id },
             data: { name, slug, imageUrl }
         });
-    } catch (error) {
-        return { message: 'Error updating category' };
+    } catch (error: any) {
+        console.error('Update category error:', error);
+        return { message: `Błąd podczas aktualizacji: ${error instanceof Error ? error.message : 'Nieznany błąd'}` };
     }
 
     revalidatePath('/portfolio');

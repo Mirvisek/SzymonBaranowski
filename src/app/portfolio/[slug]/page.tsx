@@ -31,7 +31,12 @@ export default async function CategoryGalleryPage({ params }: { params: Promise<
             <div className="pt-8 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 className="text-4xl md:text-5xl font-bold text-center text-dark mb-4">{category.name}</h1>
                 <p className="text-center text-gray-600 mb-16">
-                    {items.length} {items.length === 1 ? 'zdjęcie' : 'zdjęć'}
+                    {items.length} {(() => {
+                        const n = items.length;
+                        if (n === 1) return 'zdjęcie';
+                        if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'zdjęcia';
+                        return 'zdjęć';
+                    })()}
                 </p>
 
                 {items.length === 0 ? (
