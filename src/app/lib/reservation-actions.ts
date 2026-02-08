@@ -190,6 +190,18 @@ export async function getReservationByCode(code: string) {
     }
 }
 
+export async function getReservationMessages(reservationId: string) {
+    try {
+        const messages = await prisma.reservationMessage.findMany({
+            where: { reservationId },
+            orderBy: { createdAt: 'asc' }
+        });
+        return { success: true, messages };
+    } catch (error) {
+        return { success: false, messages: [] };
+    }
+}
+
 export async function sendReservationMessage(reservationId: string, sender: 'client' | 'admin', content: string) {
     try {
         const message = await prisma.reservationMessage.create({

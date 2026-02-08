@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { sendReservationMessage } from '@/app/lib/reservation-actions';
+import { sendReservationMessage, getReservationMessages } from '@/app/lib/reservation-actions';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { Send, User, ShieldCheck } from 'lucide-react';
@@ -26,24 +26,28 @@ export default function ReservationChat({
     initialMessages,
     role
 }: ReservationChatProps) {
-    const [messages, setMessages] = useState(initialMessages);
+    const [messages, setMessages] = useState<any[]>(initialMessages);
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
-    // Sync messages if props change (e.g. from router.refresh)
+    // Poll for new messages every 3 seconds without refreshing the whole page
     useEffect(() => {
-        setMessages(initialMessages);
-    }, [initialMessages]);
-
-    // Simple polling to keep the conversation fresh
-    useEffect(() => {
-        const interval = setInterval(() => {
-            router.refresh();
-        }, 3000); // Poll every 3 seconds
+        const interval = setInterval(async () => {
+            const result = await getReservationMessages(reservationId);
+            if (result.success && result.messages) {
+                setMessages(prev => {
+                    // Only update if there are new messages to avoid re-renders/flickers
+                    if (JSON.stringify(prev) !== JSON.stringify(result.messages)) {
+                        return result.messages;
+                    }
+                    return prev;
+                });
+            }
+        }, 3000);
         return () => clearInterval(interval);
-    }, [router]);
+    }, [reservationId]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,11 +61,34 @@ export default function ReservationChat({
         e.preventDefault();
         if (!newMessage.trim() || isSending) return;
 
+        const content = newMessage.trim();
+        setNewMessage('');
         setIsSending(true);
-        const result = await sendReservationMessage(reservationId, role, newMessage.trim());
+
+        // Optimistic update
+        const optimisticMsg = {
+            id: 'temp-' + Date.now(),
+            sender: role,
+            content: content,
+            createdAt: new Date(),
+            reservationId: reservationId
+        };
+
+        setMessages(prev => [...prev, optimisticMsg]);
+
+        const result = await sendReservationMessage(reservationId, role, content);
 
         if (result.success) {
-            setNewMessage('');
+            // Fetch latest messages to confirm and sync
+            const latest = await getReservationMessages(reservationId);
+            if (latest.success && latest.messages) {
+                setMessages(latest.messages);
+            } else {
+                router.refresh(); // Fallback
+            }
+        } else {
+            // Revert on failure (simple version: just refresh)
+            alert('Nie udało się wysłać wiadomości.');
             router.refresh();
         }
         setIsSending(false);
