@@ -12,8 +12,9 @@ import CalendarButtons from '@/components/CalendarButtons';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ReservationManagementPage({ params }: { params: { code: string } }) {
-    const reservation = await getReservationByCode(params.code) as any;
+export default async function ReservationManagementPage({ params }: { params: Promise<{ code: string }> }) {
+    const { code } = await params;
+    const reservation = await getReservationByCode(code) as any;
 
     if (!reservation) {
         notFound();

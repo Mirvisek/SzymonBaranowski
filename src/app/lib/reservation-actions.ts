@@ -132,6 +132,32 @@ export async function updateReservationStatus(id: string, status: string) {
         return { success: false, message: 'Nie udało się zaktualizować statusu.' };
     }
 }
+
+export async function updateReservationDetails(id: string, data: {
+    date?: Date;
+    totalPrice?: string;
+    clientName?: string;
+    clientEmail?: string;
+    clientPhone?: string;
+}) {
+    try {
+        const updated = await prisma.reservation.update({
+            where: { id },
+            data: {
+                ...data,
+            },
+        });
+
+        revalidatePath('/admin/reservations');
+        revalidatePath(`/admin/reservations/${id}`);
+        revalidatePath(`/rezerwacja/${updated.code}`);
+
+        return { success: true };
+    } catch (error) {
+        console.error('Update reservation details error:', error);
+        return { success: false, message: 'Nie udało się zaktualizować szczegółów rezerwacji.' };
+    }
+}
 export async function getReservationByCode(code: string) {
     try {
         return await prisma.reservation.findUnique({

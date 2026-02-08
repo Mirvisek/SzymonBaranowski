@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { MapPin, Mail, Phone, Calendar, Clock, Tag, MessageSquare, ChevronLeft } from 'lucide-react';
 import ReservationChat from '@/components/ReservationChat';
 import Link from 'next/link';
+import ReservationDetailsEditor from '@/app/admin/components/ReservationDetailsEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,6 +43,12 @@ export default async function AdminReservationDetailPage({ params }: { params: P
                         </div>
                         <p className="text-gray-500">Zarządzaj rezerwacją i rozmawiaj z klientem.</p>
                     </div>
+
+                    <ReservationDetailsEditor
+                        reservationId={res.id}
+                        initialDate={res.date}
+                        initialPrice={res.totalPrice || ''}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3">
