@@ -50,23 +50,23 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                 <div className="pt-10 pb-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                         {/* Header */}
-                        <div className="bg-dark p-8 md:p-12 text-white">
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div className="bg-dark p-6 sm:p-8 md:p-12 text-white">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
                                 <div>
-                                    <span className="text-white/60 text-sm uppercase tracking-widest font-semibold">Numer rezerwacji</span>
-                                    <h1 className="text-3xl md:text-4xl font-mono font-bold mt-1 uppercase">{reservation.code}</h1>
+                                    <span className="text-white/60 text-xs sm:text-sm uppercase tracking-widest font-semibold">Numer rezerwacji</span>
+                                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold mt-1 uppercase break-all">{reservation.code}</h1>
                                 </div>
-                                <div className={`flex items-center gap-2 px-6 py-3 rounded-full border ${getStatusStyle(reservation.status)} font-bold`}>
+                                <div className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full border ${getStatusStyle(reservation.status)} font-bold text-sm sm:text-base`}>
                                     {getStatusIcon(reservation.status)}
                                     {getStatusLabel(reservation.status)}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3">
+                        <div className="flex flex-col lg:grid lg:grid-cols-3">
                             {/* Details Sidebar */}
-                            <div className="p-8 border-r border-gray-100 bg-gray-50/50">
-                                <h2 className="text-xl font-bold text-dark mb-6">Szczegóły</h2>
+                            <div className="p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-gray-100 bg-gray-50/50 order-2 lg:order-1">
+                                <h2 className="text-lg sm:text-xl font-bold text-dark mb-6">Szczegóły</h2>
 
                                 <div className="space-y-6">
                                     <div className="flex items-start gap-4">
@@ -75,7 +75,7 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500 font-semibold uppercase">Usługa</p>
-                                            <p className="font-bold text-dark">{reservation.offer.title}</p>
+                                            <p className="font-bold text-dark text-sm sm:text-base">{reservation.offer.title}</p>
                                         </div>
                                     </div>
 
@@ -85,7 +85,7 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500 font-semibold uppercase">Data</p>
-                                            <p className="font-bold text-dark">{format(new Date(reservation.date), 'dd MMMM yyyy', { locale: pl })}</p>
+                                            <p className="font-bold text-dark text-sm sm:text-base">{format(new Date(reservation.date), 'dd MMMM yyyy', { locale: pl })}</p>
                                         </div>
                                     </div>
 
@@ -95,13 +95,13 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500 font-semibold uppercase">Godzina</p>
-                                            <p className="font-bold text-dark">{format(new Date(reservation.date), 'HH:mm')}</p>
+                                            <p className="font-bold text-dark text-sm sm:text-base">{format(new Date(reservation.date), 'HH:mm')}</p>
                                         </div>
                                     </div>
 
                                     <div className="pt-6 border-t border-gray-200">
                                         <p className="text-xs text-gray-500 font-semibold uppercase mb-4">Twoje dane</p>
-                                        <p className="font-bold text-dark">{reservation.clientName}</p>
+                                        <p className="font-bold text-dark text-sm sm:text-base">{reservation.clientName}</p>
                                         <p className="text-gray-600 text-sm">{reservation.clientEmail}</p>
                                         <p className="text-gray-600 text-sm">{reservation.clientPhone}</p>
                                     </div>
@@ -124,10 +124,10 @@ export default async function ReservationManagementPage({ params }: { params: Pr
                             </div>
 
                             {/* Chat Section */}
-                            <div className="lg:col-span-2 p-0 flex flex-col h-[600px]">
-                                <div className="p-6 border-b border-gray-100 flex items-center gap-3">
+                            <div className="lg:col-span-2 p-0 flex flex-col h-[500px] sm:h-[600px] order-1 lg:order-2 border-b lg:border-b-0 border-gray-100">
+                                <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center gap-3">
                                     <MessageSquare className="text-primary" size={20} />
-                                    <h2 className="text-xl font-bold text-dark">Konwersacja</h2>
+                                    <h2 className="text-lg sm:text-xl font-bold text-dark">Konwersacja</h2>
                                 </div>
 
                                 <ReservationChat
