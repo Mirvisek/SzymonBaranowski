@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Poppins } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
@@ -13,9 +13,16 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#E63946',
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
+    metadataBase: new URL('https://szymonbaranowski.pl'),
     title: settings.site_title || 'Szymon - Fotografia, Grafika, Marketing',
     keywords: 'Szymon Baranowski, Tarnów, Fotografia Tarnów, Grafik Tarnów, Marketing Tarnów, profesjonalne sesje zdjęciowe, fotografia biznesowa, fotografia produktowa, fotografia wizerunkowa, sesje lifestyle, projektowanie graficzne, identyfikacja wizualna, branding, projektowanie logo, grafika do social media, marketing internetowy, strategia marki, social media marketing, copywriting, kampanie reklamowe',
     openGraph: {
@@ -46,7 +53,6 @@ export async function generateMetadata(): Promise<Metadata> {
       statusBarStyle: 'default',
       title: 'Szymon Portfolio',
     },
-    themeColor: '#E63946',
   };
 }
 
