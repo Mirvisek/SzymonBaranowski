@@ -5,9 +5,7 @@ import Footer from '@/components/Footer';
 import { getSettings } from '@/app/lib/data';
 import AboutClient from '@/components/AboutClient';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 

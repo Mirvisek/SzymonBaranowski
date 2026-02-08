@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { TrendingUp, Users, Image, MessageSquare, Calendar, Eye } from 'lucide-react';
-
-const prisma = new PrismaClient();
 
 export default async function AnalyticsPage() {
     // Fetch statistics

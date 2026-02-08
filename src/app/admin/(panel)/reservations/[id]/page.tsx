@@ -1,5 +1,5 @@
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { notFound } from 'next/navigation';
@@ -7,13 +7,12 @@ import { MapPin, Mail, Phone, Calendar, Clock, Tag, MessageSquare, ChevronLeft }
 import ReservationChat from '@/components/ReservationChat';
 import Link from 'next/link';
 
-const prisma = new PrismaClient();
-
 export const dynamic = 'force-dynamic';
 
-export default async function AdminReservationDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminReservationDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const res = await prisma.reservation.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
             offer: true,
             messages: {

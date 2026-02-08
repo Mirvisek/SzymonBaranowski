@@ -1,10 +1,8 @@
 
 import Link from 'next/link';
 import { Plus, Trash2, HelpCircle } from 'lucide-react';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { deleteFAQ } from '@/app/lib/actions';
-
-const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 

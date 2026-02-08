@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { deleteMessage, toggleMessageReadStatus } from '@/app/lib/actions';
 import { Mail, Trash2, CheckCircle, Circle, Clock } from 'lucide-react';
-
-const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
