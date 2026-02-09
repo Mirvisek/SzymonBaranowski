@@ -1,7 +1,5 @@
 
 import { getReservationByCode } from '@/app/lib/reservation-actions';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { notFound } from 'next/navigation';

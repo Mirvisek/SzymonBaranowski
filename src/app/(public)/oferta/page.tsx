@@ -1,6 +1,4 @@
 
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import OfferList from '@/components/OfferList';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import FAQList from '@/components/FAQList';
@@ -31,7 +29,6 @@ export default async function Oferta() {
 
     return (
         <main className="min-h-screen bg-white">
-            <Navbar />
 
             <div className="pt-28 pb-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Breadcrumbs />
@@ -51,7 +48,6 @@ export default async function Oferta() {
                 <FAQList items={faqs} />
             </ScrollReveal>
 
-            <Footer />
         </main>
     );
 }

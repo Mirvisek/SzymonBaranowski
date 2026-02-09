@@ -1,7 +1,5 @@
 
 import { Suspense } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { getSettings } from '@/app/lib/data';
 import AboutClient from '@/components/AboutClient';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -30,7 +28,6 @@ export default async function About() {
 
     return (
         <main className="min-h-screen bg-white">
-            <Navbar />
             <div className="pt-28 pb-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Breadcrumbs />
             </div>
@@ -38,7 +35,6 @@ export default async function About() {
                 {/* Content Section */}
                 <AboutClient content={content} imageUrl={imageUrl} clients={clients} />
             </div>
-            <Footer />
         </main>
     );
 }

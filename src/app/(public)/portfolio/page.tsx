@@ -1,5 +1,3 @@
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getPortfolioCategories, getSettings } from '@/app/lib/data';
 import Link from 'next/link';
@@ -21,7 +19,6 @@ export default async function Portfolio() {
 
     return (
         <main className="min-h-screen bg-light">
-            <Navbar />
 
             <div className="pt-28 pb-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Breadcrumbs />
@@ -75,7 +72,6 @@ export default async function Portfolio() {
                 )}
             </div>
 
-            <Footer />
         </main>
     );
 }

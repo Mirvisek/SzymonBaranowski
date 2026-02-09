@@ -1,10 +1,8 @@
 import Link from 'next/link';
 import { Camera, Palette, Rocket } from 'lucide-react';
-import Navbar from '@/components/Navbar';
 import HeroCarousel from '@/components/HeroCarousel';
 import RecentWork from '@/components/RecentWork';
 import Testimonials from '@/components/Testimonials';
-import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
 
 import { getSettings } from '@/app/lib/data';
@@ -16,7 +14,6 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-light">
-      <Navbar />
 
       {/* 1. Hero Carousel */}
       <HeroCarousel />
@@ -126,7 +123,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <Footer />
     </main>
   );
 }
