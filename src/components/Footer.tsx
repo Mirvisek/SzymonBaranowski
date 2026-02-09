@@ -2,6 +2,14 @@
 import Link from 'next/link';
 import { Facebook, Instagram, Music } from 'lucide-react';
 import { getSettings, getVisibleLegalDocuments } from '@/app/lib/data';
+// import type { LegalDocument } from '@prisma/client';
+
+type LegalDocument = {
+    id: string;
+    title: string;
+    slug: string;
+    visible: boolean;
+};
 
 export default async function Footer() {
     const settings = await getSettings();
@@ -37,7 +45,7 @@ export default async function Footer() {
                         <h4 className="text-lg font-semibold text-white mb-4">Dokumenty Prawne</h4>
                         <ul className="space-y-2 text-sm">
                             {legalDocuments.length > 0 ? (
-                                legalDocuments.map((doc: any) => (
+                                legalDocuments.map((doc: LegalDocument) => (
                                     <li key={doc.id}>
                                         <Link href={`/dokumenty/${doc.slug}`} className="hover:text-accent transition-colors">
                                             {doc.title}

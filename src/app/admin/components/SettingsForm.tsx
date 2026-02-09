@@ -1,16 +1,21 @@
-
 'use client';
 
 import { updateSettings } from '@/app/lib/actions';
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import RichTextEditor from './RichTextEditor';
 import ImageUploader from './ImageUploader';
-import AccountSettingsForm from './AccountSettingsForm'; // New import
-import { ChevronDown, Save, Globe, User, Share2, FileText, Code, Layout, ShieldCheck } from 'lucide-react';
+import AccountSettingsForm from './AccountSettingsForm';
+import Toast from '@/components/Toast';
+import {
+    Save, Globe, User, Share2, FileText, Code, Layout,
+    ShieldCheck, Settings as SettingsIcon, Eye, Mail,
+    Image as ImageIcon, Palette
+} from 'lucide-react';
 
 export default function SettingsForm({ settings, currentUserEmail }: { settings: Record<string, string>, currentUserEmail: string }) {
     const [state, formAction] = useActionState(updateSettings, null);
     const [activeTab, setActiveTab] = useState('general');
+    const [showToast, setShowToast] = useState(false);
 
     // Local state for specialized inputs
     const [aboutContent, setAboutContent] = useState(settings.about_content || '');
@@ -19,335 +24,324 @@ export default function SettingsForm({ settings, currentUserEmail }: { settings:
     const [cookiesContent, setCookiesContent] = useState(settings.policy_cookies_content || '');
     const [navbarLogoUrl, setNavbarLogoUrl] = useState(settings.navbar_logo_url || '');
 
-    const InputGroup = ({ label, name, defaultValue, type = "text", rows }: { label: string, name: string, defaultValue?: string, type?: string, rows?: number }) => (
-        <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+    // Show toast when state changes
+    useEffect(() => {
+        if (state?.message) {
+            setShowToast(true);
+        }
+    }, [state]);
+
+    // Reusable input component
+    const InputGroup = ({ label, name, defaultValue, type = "text", rows, hint }: {
+        label: string,
+        name: string,
+        defaultValue?: string,
+        type?: string,
+        rows?: number,
+        hint?: string
+    }) => (
+        <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700">{label}</label>
             {rows ? (
                 <textarea
                     name={name}
                     rows={rows}
                     defaultValue={defaultValue}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-y bg-gray-50 focus:bg-white"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-y"
                 />
             ) : (
                 <input
                     type={type}
                     name={name}
                     defaultValue={defaultValue}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-gray-50 focus:bg-white"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                 />
             )}
+            {hint && <p className="text-xs text-gray-500">{hint}</p>}
+        </div>
+    );
+
+    // Toggle switch component
+    const ToggleSwitch = ({ label, name, defaultChecked, hint }: {
+        label: string,
+        name: string,
+        defaultChecked: boolean,
+        hint?: string
+    }) => (
+        <div className="space-y-2">
+            <input type="hidden" name={name} value="false" />
+            <label className="flex items-center justify-between cursor-pointer group">
+                <div className="flex-1">
+                    <span className="font-semibold text-gray-700 text-sm">{label}</span>
+                    {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
+                </div>
+                <div className="relative">
+                    <input
+                        type="checkbox"
+                        name={name}
+                        value="true"
+                        defaultChecked={defaultChecked}
+                        className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </div>
+            </label>
+        </div>
+    );
+
+    // Card component for grouping
+    const Card = ({ title, children, icon: Icon }: { title: string, children: React.ReactNode, icon?: any }) => (
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-3 border-b border-gray-100">
+                {Icon && <Icon size={20} className="text-primary" />}
+                {title}
+            </h3>
+            <div className="space-y-4">
+                {children}
+            </div>
         </div>
     );
 
     const tabs = [
-        { id: 'general', label: 'SEO & Główne', icon: Globe },
-        { id: 'about', label: 'O Mnie', icon: User },
-        { id: 'files', label: 'Opisy Usług', icon: Layout },
-        { id: 'contact', label: 'Dane & Social', icon: Share2 },
-        { id: 'legal', label: 'Prawne', icon: FileText },
-        { id: 'advanced', label: 'Zaawansowane', icon: Code },
-        { id: 'account', label: 'Konto Admina', icon: ShieldCheck }, // New Tab
+        { id: 'general', label: 'Ogólne', icon: SettingsIcon, desc: 'Podstawowa konfiguracja' },
+        { id: 'branding', label: 'Wygląd', icon: Palette, desc: 'Logo, kolory, nawigacja' },
+        { id: 'seo', label: 'SEO', icon: Globe, desc: 'Meta tagi, optymalizacja' },
+        { id: 'about', label: 'O Mnie', icon: User, desc: 'Treści biograficzne' },
+        { id: 'services', label: 'Usługi', icon: Layout, desc: 'Opisy oferty' },
+        { id: 'contact', label: 'Kontakt', icon: Share2, desc: 'Dane i social media' },
+        { id: 'legal', label: 'Prawne', icon: FileText, desc: 'Polityki i regulaminy' },
+        { id: 'account', label: 'Konto', icon: ShieldCheck, desc: 'Ustawienia admina' },
     ];
 
     return (
         <div className="pb-24">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Ustawienia</h1>
-                <p className="text-gray-500">Konfiguracja strony</p>
+            {/* Header */}
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Ustawienia Strony</h1>
+                <p className="text-gray-600">Zarządzaj konfiguracją i wyglądem swojej witryny</p>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-
-                {/* Navigation Sidebar */}
-                <div className="w-full md:w-64 flex-shrink-0 space-y-2 sticky top-4">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm text-left ${activeTab === tab.id ? 'bg-white text-primary shadow-sm ring-1 ring-primary/20' : 'text-gray-600 hover:bg-gray-100'}`}
-                        >
-                            <tab.icon size={18} />
-                            {tab.label}
-                        </button>
-                    ))}
-
-                    {/* Submit Button for Site Settings - Only show if standard tabs active */}
-                    {activeTab !== 'account' && (
-                        <div className="pt-4 mt-4 border-t border-gray-100">
-                            <button
-                                type="submit"
-                                form="site-settings-form"
-                                className="w-full flex items-center justify-center gap-2 bg-dark text-white px-4 py-3 rounded-xl shadow-lg hover:bg-primary transition-all font-bold"
-                            >
-                                <Save size={18} />
-                                Zapisz
-                            </button>
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Sidebar Navigation */}
+                <div className="lg:w-72 flex-shrink-0">
+                    <div className="bg-white rounded-xl border border-gray-200 p-4 sticky top-4">
+                        <div className="space-y-1">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    type="button"
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`w-full flex items-start gap-3 px-4 py-3 rounded-lg transition-all text-left group ${activeTab === tab.id
+                                        ? 'bg-primary text-white shadow-lg'
+                                        : 'text-gray-700 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    <tab.icon size={20} className={activeTab === tab.id ? 'text-white' : 'text-primary'} />
+                                    <div className="flex-1 min-w-0">
+                                        <div className="font-semibold text-sm">{tab.label}</div>
+                                        <div className={`text-xs ${activeTab === tab.id ? 'text-white/80' : 'text-gray-500'}`}>
+                                            {tab.desc}
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
                         </div>
-                    )}
+
+                        {/* Save Button */}
+                        {activeTab !== 'account' && (
+                            <div className="mt-6 pt-4 border-t border-gray-200">
+                                <button
+                                    type="submit"
+                                    form="site-settings-form"
+                                    className="w-full flex items-center justify-center gap-2 bg-dark text-white px-4 py-3 rounded-lg hover:bg-primary transition-all font-bold shadow-lg"
+                                >
+                                    <Save size={18} />
+                                    Zapisz Zmiany
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     {activeTab === 'account' ? (
                         <AccountSettingsForm currentUserEmail={currentUserEmail} />
                     ) : (
-                        <form id="site-settings-form" action={formAction} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 min-h-[500px]">
-                            {state?.message && (
-                                <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${state.message.includes('success') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-                                    {state.message.includes('success') ? '✅' : '❌'} {state.message}
+                        <form id="site-settings-form" action={formAction}>
+
+                            {/* OGÓLNE */}
+                            {activeTab === 'general' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <Card title="Funkcje Systemowe" icon={Code}>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <ToggleSwitch
+                                                label="Tryb Serwisowy"
+                                                name="maintenance_mode"
+                                                defaultChecked={settings.maintenance_mode === 'true'}
+                                                hint="Wyświetla komunikat o pracach technicznych"
+                                            />
+                                            <ToggleSwitch
+                                                label="Widget Dostępności (WCAG)"
+                                                name="accessibility_widget"
+                                                defaultChecked={settings.accessibility_widget === 'true'}
+                                                hint="Opcje dla osób niepełnosprawnych"
+                                            />
+                                            <ToggleSwitch
+                                                label="Banner Cookies"
+                                                name="cookie_banner"
+                                                defaultChecked={settings.cookie_banner === 'true'}
+                                                hint="Zgoda na pliki cookie (RODO)"
+                                            />
+                                        </div>
+                                    </Card>
+
+                                    <Card title="Podstawowe Informacje">
+                                        <InputGroup
+                                            label="Adres URL Strony"
+                                            name="site_url"
+                                            defaultValue={settings.site_url}
+                                            hint="Pełny adres Twojej witryny (np. https://example.com)"
+                                        />
+                                    </Card>
                                 </div>
                             )}
 
-                            {/* 1. Główne & SEO */}
-                            <div className={activeTab === 'general' ? 'block animate-fade-in' : 'hidden'}>
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
-                                    <Globe className="text-primary" size={24} /> Główne & SEO
-                                </h2>
-
-                                <div className="grid grid-cols-1 gap-6">
-                                    {/* System Functions */}
-                                    <div className="p-6 bg-gray-50 rounded-xl border border-gray-100 space-y-6">
-                                        <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                            <Code size={20} className="text-primary" /> Funkcje Systemowe
-                                        </h3>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                            {/* Maintenance Mode */}
-                                            <div className="flex flex-col gap-2">
-                                                <label className="font-medium text-gray-700">Tryb Serwisowy</label>
-                                                <div className="flex items-center gap-3">
-                                                    <input type="hidden" name="maintenance_mode" value="false" />
-                                                    <label className="relative inline-flex items-center cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            name="maintenance_mode"
-                                                            value="true"
-                                                            defaultChecked={settings.maintenance_mode === 'true'}
-                                                            className="sr-only peer"
-                                                        />
-                                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                                        <span className="ml-3 text-sm font-medium text-gray-600">Włączony</span>
-                                                    </label>
-                                                </div>
-                                                <p className="text-xs text-gray-500">Gdy włączony, strona publiczna wyświetla komunikat o pracach technicznych.</p>
-                                            </div>
-
-                                            {/* Accessibility */}
-                                            <div className="flex flex-col gap-2">
-                                                <label className="font-medium text-gray-700">Widget Dostępności (WCAG)</label>
-                                                <div className="flex items-center gap-3">
-                                                    <input type="hidden" name="accessibility_widget" value="false" />
-                                                    <label className="relative inline-flex items-center cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            name="accessibility_widget"
-                                                            value="true"
-                                                            defaultChecked={settings.accessibility_widget === 'true'}
-                                                            className="sr-only peer"
-                                                        />
-                                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                                        <span className="ml-3 text-sm font-medium text-gray-600">Pokaż widget</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            {/* Cookie Banner */}
-                                            <div className="flex flex-col gap-2">
-                                                <label className="font-medium text-gray-700">Banner Cookies</label>
-                                                <div className="flex items-center gap-3">
-                                                    <input type="hidden" name="cookie_banner" value="false" />
-                                                    <label className="relative inline-flex items-center cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            name="cookie_banner"
-                                                            value="true"
-                                                            defaultChecked={settings.cookie_banner === 'true'}
-                                                            className="sr-only peer"
-                                                        />
-                                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                                        <span className="ml-3 text-sm font-medium text-gray-600">Pokaż banner</span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                            {/* WYGLĄD */}
+                            {activeTab === 'branding' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <Card title="Logo i Nazwa Marki" icon={Palette}>
+                                        <InputGroup
+                                            label="Nazwa marki w nawigacji"
+                                            name="navbar_brand_name"
+                                            defaultValue={settings.navbar_brand_name || 'Szymon'}
+                                        />
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                                Logo w nawigacji (opcjonalnie)
+                                            </label>
+                                            <ImageUploader value={navbarLogoUrl} onUpload={setNavbarLogoUrl} />
+                                            <input type="hidden" name="navbar_logo_url" value={navbarLogoUrl} />
+                                            <p className="text-xs text-gray-500 mt-2">
+                                                Rekomendowany rozmiar: 200x50px (proporcje 4:1)
+                                            </p>
                                         </div>
-                                    </div>
+                                    </Card>
+                                </div>
+                            )}
 
-                                    {/* Navbar Settings */}
-                                    <div className="p-6 bg-gray-50 rounded-xl border border-gray-100">
-                                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                            </svg>
-                                            Nawigacja (Logo i Nazwa)
-                                        </h3>
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <InputGroup
-                                                label="Nazwa marki w navbar"
-                                                name="navbar_brand_name"
-                                                defaultValue={settings.navbar_brand_name || 'Szymon'}
-                                            />
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">Logo w navbar (opcjonalnie)</label>
-                                                <ImageUploader
-                                                    value={navbarLogoUrl}
-                                                    onUpload={setNavbarLogoUrl}
-                                                />
-                                                <input type="hidden" name="navbar_logo_url" value={navbarLogoUrl} />
-                                                <p className="text-xs text-gray-500 mt-1">Jeśli przesłesz logo, zastąpi ono tekst w nawigacji. Rekomendowany rozmiar: 200x50px (proporcje 4:1)</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                            {/* SEO */}
+                            {activeTab === 'seo' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <Card title="Strona Główna" icon={Globe}>
+                                        <InputGroup label="Meta Title" name="site_title" defaultValue={settings.site_title} />
+                                        <InputGroup label="Meta Description" name="site_description" rows={3} defaultValue={settings.site_description} />
+                                        <InputGroup label="Słowa kluczowe" name="site_keywords" defaultValue={settings.site_keywords} />
+                                    </Card>
 
-                                    <div className="p-5 bg-primary/5 rounded-xl border border-primary/10">
-                                        <h3 className="font-bold text-primary mb-4 text-sm uppercase tracking-wide">STRONA GŁÓWNA</h3>
-                                        <div className="space-y-4">
-                                            <InputGroup label="Tytuł (Meta Title)" name="site_title" defaultValue={settings.site_title} />
-                                            <InputGroup label="Opis (Meta Description)" name="site_description" rows={3} defaultValue={settings.site_description} />
-                                            <InputGroup label="Słowa kluczowe" name="site_keywords" defaultValue={settings.site_keywords} />
-                                        </div>
-                                    </div>
-
-                                    <InputGroup label="Pełny Adres URL" name="site_url" defaultValue={settings.site_url} />
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <div className="font-bold text-gray-700 mb-3 text-xs uppercase tracking-wide">Podstrona: Oferta</div>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <Card title="Podstrona: Oferta">
                                             <InputGroup label="Meta Title" name="seo_offer_title" defaultValue={settings.seo_offer_title} />
                                             <InputGroup label="Meta Description" name="seo_offer_desc" rows={2} defaultValue={settings.seo_offer_desc} />
-                                        </div>
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <div className="font-bold text-gray-700 mb-3 text-xs uppercase tracking-wide">Podstrona: Portfolio</div>
+                                        </Card>
+                                        <Card title="Podstrona: Portfolio">
                                             <InputGroup label="Meta Title" name="seo_portfolio_title" defaultValue={settings.seo_portfolio_title} />
                                             <InputGroup label="Meta Description" name="seo_portfolio_desc" rows={2} defaultValue={settings.seo_portfolio_desc} />
-                                        </div>
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <div className="font-bold text-gray-700 mb-3 text-xs uppercase tracking-wide">Podstrona: Kontakt</div>
+                                        </Card>
+                                        <Card title="Podstrona: Kontakt">
                                             <InputGroup label="Meta Title" name="seo_contact_title" defaultValue={settings.seo_contact_title} />
                                             <InputGroup label="Meta Description" name="seo_contact_desc" rows={2} defaultValue={settings.seo_contact_desc} />
-                                        </div>
+                                        </Card>
                                     </div>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* 2. O Mnie */}
-                            <div className={activeTab === 'about' ? 'block animate-fade-in' : 'hidden'}>
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
-                                    <User className="text-primary" size={24} /> Sekcja O Mnie
-                                </h2>
-
-                                <div className="space-y-6">
-                                    <div className="bg-gray-50 p-6 rounded-xl">
-                                        <h3 className="font-bold text-gray-900 mb-4">Strona Główna</h3>
-                                        <InputGroup label="Nagłówek" name="home_about_heading" defaultValue={settings.home_about_heading || 'Tworzę wizerunek, który działa.'} />
+                            {/* O MNIE */}
+                            {activeTab === 'about' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <Card title="Sekcja na Stronie Głównej">
+                                        <InputGroup label="Nagłówek" name="home_about_heading" defaultValue={settings.home_about_heading} />
                                         <InputGroup label="Krótki tekst" name="home_about_text" rows={3} defaultValue={settings.home_about_text} />
-                                    </div>
+                                    </Card>
 
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 mb-4">Podstrona "O Mnie"</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">Zdjęcie Profilowe</label>
-                                                <ImageUploader value={aboutImage} onUpload={setAboutImage} />
-                                                <input type="hidden" name="about_image" value={aboutImage} />
-                                            </div>
-                                            <div className="md:col-span-2">
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">Pełna biografia</label>
-                                                <RichTextEditor value={aboutContent} onChange={setAboutContent} />
-                                                <input type="hidden" name="about_content" value={aboutContent} />
-                                            </div>
+                                    <Card title="Podstrona O Mnie">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Treść Główna</label>
+                                            <RichTextEditor value={aboutContent} onChange={setAboutContent} />
+                                            <input type="hidden" name="about_content" value={aboutContent} />
                                         </div>
-                                    </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Zdjęcie Profilowe</label>
+                                            <ImageUploader value={aboutImage} onUpload={setAboutImage} />
+                                            <input type="hidden" name="about_image" value={aboutImage} />
+                                        </div>
+                                    </Card>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* 3. Opisy Usług */}
-                            <div className={activeTab === 'files' ? 'block animate-fade-in' : 'hidden'}>
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
-                                    <Layout className="text-primary" size={24} /> Opisy Usług (Home)
-                                </h2>
-                                <div className="space-y-6">
-                                    <InputGroup label="Fotografia - Opis" name="service_fotografia_desc" rows={4} defaultValue={settings.service_fotografia_desc} />
-                                    <InputGroup label="Grafika - Opis" name="service_grafika_desc" rows={4} defaultValue={settings.service_grafika_desc} />
-                                    <InputGroup label="Marketing - Opis" name="service_marketing_desc" rows={4} defaultValue={settings.service_marketing_desc} />
+                            {/* USŁUGI */}
+                            {activeTab === 'services' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <Card title="Usługa: Fotografia" icon={ImageIcon}>
+                                        <InputGroup label="Tytuł" name="service_photo_title" defaultValue={settings.service_photo_title} />
+                                        <InputGroup label="Opis" name="service_photo_desc" rows={4} defaultValue={settings.service_photo_desc} />
+                                    </Card>
+                                    <Card title="Usługa: Grafika">
+                                        <InputGroup label="Tytuł" name="service_graphics_title" defaultValue={settings.service_graphics_title} />
+                                        <InputGroup label="Opis" name="service_graphics_desc" rows={4} defaultValue={settings.service_graphics_desc} />
+                                    </Card>
+                                    <Card title="Usługa: Marketing">
+                                        <InputGroup label="Tytuł" name="service_marketing_title" defaultValue={settings.service_marketing_title} />
+                                        <InputGroup label="Opis" name="service_marketing_desc" rows={4} defaultValue={settings.service_marketing_desc} />
+                                    </Card>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* 4. Contact & Socials */}
-                            <div className={activeTab === 'contact' ? 'block animate-fade-in' : 'hidden'}>
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
-                                    <Share2 className="text-primary" size={24} /> Dane Kontaktowe & Social Media
-                                </h2>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                    <InputGroup label="Email" name="email_address" defaultValue={settings.email_address} />
-                                    <InputGroup label="Telefon" name="phone_number" defaultValue={settings.phone_number} />
-                                    <div className="md:col-span-2">
+                            {/* KONTAKT */}
+                            {activeTab === 'contact' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <Card title="Dane Kontaktowe" icon={Mail}>
+                                        <InputGroup label="Email" name="email_address" type="email" defaultValue={settings.email_address} />
+                                        <InputGroup label="Telefon" name="phone_number" defaultValue={settings.phone_number} />
                                         <InputGroup label="Adres" name="address" defaultValue={settings.address} />
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <InputGroup label="Tekst w stopce" name="footer_copyright" defaultValue={settings.footer_copyright} />
-                                    </div>
-                                </div>
+                                        <InputGroup label="Tekst w stopce" name="footer_copyright" defaultValue={settings.footer_copyright} hint="Dodatkowy tekst w stopce (np. NIP)" />
+                                    </Card>
 
-                                <h3 className="font-bold text-gray-900 mb-4 pt-6 border-t border-gray-100">Social Media (Linki)</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <InputGroup label="Facebook" name="social_facebook" defaultValue={settings.social_facebook} />
-                                    <InputGroup label="Instagram" name="social_instagram" defaultValue={settings.social_instagram} />
-                                    <InputGroup label="TikTok" name="social_tiktok" defaultValue={settings.social_tiktok} />
+                                    <Card title="Social Media">
+                                        <InputGroup label="Facebook" name="social_facebook" defaultValue={settings.social_facebook} hint="Pełny link do profilu" />
+                                        <InputGroup label="Instagram" name="social_instagram" defaultValue={settings.social_instagram} hint="Pełny link do profilu" />
+                                        <InputGroup label="TikTok" name="social_tiktok" defaultValue={settings.social_tiktok} hint="Pełny link do profilu" />
+                                    </Card>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* 5. Legal */}
-                            <div className={activeTab === 'legal' ? 'block animate-fade-in' : 'hidden'}>
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
-                                    <FileText className="text-primary" size={24} /> Dokumenty Prawne
-                                </h2>
-                                <div className="space-y-8">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Polityka Prywatności</label>
+                            {/* PRAWNE */}
+                            {activeTab === 'legal' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <Card title="Polityka Prywatności">
                                         <RichTextEditor value={privacyContent} onChange={setPrivacyContent} />
                                         <input type="hidden" name="policy_privacy_content" value={privacyContent} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Polityka Cookies</label>
+                                    </Card>
+
+                                    <Card title="Polityka Cookies">
                                         <RichTextEditor value={cookiesContent} onChange={setCookiesContent} />
                                         <input type="hidden" name="policy_cookies_content" value={cookiesContent} />
-                                    </div>
+                                    </Card>
                                 </div>
-                            </div>
-
-                            {/* 6. Advanced */}
-                            <div className={activeTab === 'advanced' ? 'block animate-fade-in' : 'hidden'}>
-                                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
-                                    <Code className="text-primary" size={24} /> Zaawansowane
-                                </h2>
-                                <div className="space-y-6">
-                                    <div className="bg-white border border-gray-200 rounded-xl p-6">
-                                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                            📊 Google Analytics
-                                        </h3>
-                                        <p className="text-sm text-gray-600 mb-4">
-                                            Śledź ruch na swojej stronie za pomocą Google Analytics. Wprowadź swój identyfikator śledzenia (Measurement ID).
-                                        </p>
-                                        <InputGroup
-                                            label="Measurement ID"
-                                            name="google_analytics_id"
-                                            defaultValue={settings.google_analytics_id}
-                                        />
-                                        <div className="mt-3 p-3 bg-blue-50 rounded-lg text-xs text-blue-800">
-                                            <p className="font-medium mb-1">💡 Wskazówka:</p>
-                                            <p>Twój Measurement ID wygląda tak: <code className="bg-blue-100 px-2 py-0.5 rounded">G-XXXXXXXXXX</code></p>
-                                            <p className="mt-1">Znajdziesz go w panelu Google Analytics → Admin → Data Streams</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            )}
                         </form>
                     )}
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            {showToast && state?.message && (
+                <Toast
+                    message={state.message.replace('✅ ', '').replace('❌ ', '')}
+                    type={state.message.includes('success') ? 'success' : 'error'}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 }

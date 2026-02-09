@@ -1,6 +1,6 @@
 
 import { getSettings } from '@/app/lib/data';
-import SettingsFormNew from '../../components/SettingsFormNew';
+import SettingsForm from '../../components/SettingsForm';
 import { auth } from '@/auth';
 
 // We force dynamic rendering to fetch fresh settings
@@ -12,7 +12,7 @@ export default async function SettingsPage() {
 
     return (
         <div>
-            <SettingsFormNew
+            <SettingsForm
                 settings={settings}
                 currentUserEmail={session?.user?.email || ''}
             />
