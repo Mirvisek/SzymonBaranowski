@@ -13,121 +13,149 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   const settings = await getSettings();
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: settings.site_title || 'Szymon Baranowski - Fotografia i Marketing',
+    image: 'https://szymonbaranowski.pl/og-image.jpg',
+    description: settings.site_description || 'Profesjonalna fotografia, grafika i marketing.',
+    url: 'https://szymonbaranowski.pl',
+    telephone: settings.phone_number,
+    email: settings.email_address,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: settings.address || 'Tarnów, Polska',
+      addressCountry: 'PL',
+    },
+    priceRange: '$$',
+    sameAs: [
+      settings.social_facebook,
+      settings.social_instagram,
+      settings.social_tiktok,
+    ].filter(Boolean),
+  };
+
   return (
-    <main className="min-h-screen bg-light">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className="min-h-screen bg-light">
 
-      {/* 1. Hero Carousel */}
-      <HeroCarousel />
+        {/* 1. Hero Carousel */}
+        <HeroCarousel />
 
-      {/* 2. Services Section (New) */}
-      <section className="relative z-10 py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { title: 'Fotografia', desc: settings.service_fotografia_desc || 'Emocje uchwycone w kadrze. Sesje biznesowe, produktowe i lifestyle.', Icon: Camera },
-            { title: 'Grafika', desc: settings.service_grafika_desc || 'Projekty, które sprzedają. Branding, social media, print.', Icon: Palette },
-            { title: 'Marketing', desc: settings.service_marketing_desc || 'Strategie, które działają. Social media, ads, copywriting.', Icon: Rocket },
-          ].map((service, i) => (
-            <ScrollReveal key={i} delay={i * 0.2}>
-              <div className="glass bg-white/60 p-8 rounded-3xl shadow-glass hover:transform hover:-translate-y-2 transition-all duration-300 h-full">
-                <div className="text-primary mb-4">
-                  <service.Icon size={48} />
+        {/* 2. Services Section (New) */}
+        <section className="relative z-10 py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { title: 'Fotografia', desc: settings.service_fotografia_desc || 'Emocje uchwycone w kadrze. Sesje biznesowe, produktowe i lifestyle.', Icon: Camera },
+              { title: 'Grafika', desc: settings.service_grafika_desc || 'Projekty, które sprzedają. Branding, social media, print.', Icon: Palette },
+              { title: 'Marketing', desc: settings.service_marketing_desc || 'Strategie, które działają. Social media, ads, copywriting.', Icon: Rocket },
+            ].map((service, i) => (
+              <ScrollReveal key={i} delay={i * 0.2}>
+                <div className="glass bg-white/60 p-8 rounded-3xl shadow-glass hover:transform hover:-translate-y-2 transition-all duration-300 h-full">
+                  <div className="text-primary mb-4">
+                    <service.Icon size={48} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-dark mb-2">{service.title}</h3>
+                  <p className="text-gray-600 mb-6">{service.desc}</p>
+                  <Link href={`/oferta#${service.title.toLowerCase()}`} className="text-primary font-semibold hover:text-dark transition-colors flex items-center mt-auto">
+                    Zobacz więcej &rarr;
+                  </Link>
                 </div>
-                <h3 className="text-2xl font-bold text-dark mb-2">{service.title}</h3>
-                <p className="text-gray-600 mb-6">{service.desc}</p>
-                <Link href={`/oferta#${service.title.toLowerCase()}`} className="text-primary font-semibold hover:text-dark transition-colors flex items-center mt-auto">
-                  Zobacz więcej &rarr;
-                </Link>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. About Section Homepage */}
-      <ScrollReveal>
-        <section className="py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div className="relative group">
-              {/* Mock Image */}
-              <div className="aspect-[4/5] rounded-3xl bg-gray-200 overflow-hidden shadow-2xl relative z-10 group-hover:transform group-hover:scale-[1.01] transition-all duration-700">
-                {/* Używamy Image dla optymalizacji */}
-                <Image
-                  src="https://placehold.co/800x1000?text=Szymon"
-                  alt="Szymon"
-                  width={800}
-                  height={1000}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                  priority
-                />
-              </div>
-              {/* Decorative element */}
-              <div className="absolute top-10 -right-10 w-full h-full border-2 border-primary/20 rounded-3xl z-0" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-primary/30 to-transparent rounded-full blur-3xl" />
-            </div>
-
-            <div>
-              <span className="text-primary font-semibold tracking-wider uppercase text-sm">O mnie</span>
-              <h2 className="text-5xl lg:text-6xl font-bold text-dark mt-2 mb-8 tracking-tight">
-                {settings.home_about_heading ? (
-                  <span dangerouslySetInnerHTML={{ __html: settings.home_about_heading.replace(/\n/g, '<br/>') }} />
-                ) : (
-                  <>Tworzę wizerunek,<br /> który <span className="text-primary">działa.</span></>
-                )}
-              </h2>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                {settings.home_about_text || 'Cześć! Jestem Szymon. Łączę świat fotografii, designu i marketingu, aby pomagać markom opowiadać ich historie. Wierzę w minimalizm, autentyczność i siłę dobrego designu.'}
-              </p>
-
-              <div className="flex gap-4">
-                <Link
-                  href="/o-mnie"
-                  className="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-white bg-dark hover:bg-primary transition-colors shadow-lg shadow-dark/20 hover:shadow-primary/30"
-                >
-                  Poznaj mnie
-                </Link>
-                <Link
-                  href="/portfolio"
-                  className="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-dark bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
-                >
-                  Moje prace
-                </Link>
-              </div>
-            </div>
+              </ScrollReveal>
+            ))}
           </div>
         </section>
-      </ScrollReveal>
 
-      {/* 4. Recent Work */}
-      <ScrollReveal direction="right">
-        <RecentWork />
-      </ScrollReveal>
+        {/* 3. About Section Homepage */}
+        <ScrollReveal>
+          <section className="py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+              <div className="relative group">
+                {/* Mock Image */}
+                <div className="aspect-[4/5] rounded-3xl bg-gray-200 overflow-hidden shadow-2xl relative z-10 group-hover:transform group-hover:scale-[1.01] transition-all duration-700">
+                  {/* Używamy Image dla optymalizacji */}
+                  <Image
+                    src="https://placehold.co/800x1000?text=Szymon"
+                    alt="Szymon"
+                    width={800}
+                    height={1000}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                    priority
+                  />
+                </div>
+                {/* Decorative element */}
+                <div className="absolute top-10 -right-10 w-full h-full border-2 border-primary/20 rounded-3xl z-0" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-primary/30 to-transparent rounded-full blur-3xl" />
+              </div>
 
-      {/* 5. Testimonials Section */}
-      <ScrollReveal direction="left">
-        <Testimonials />
-      </ScrollReveal>
+              <div>
+                <span className="text-primary font-semibold tracking-wider uppercase text-sm">O mnie</span>
+                <h2 className="text-5xl lg:text-6xl font-bold text-dark mt-2 mb-8 tracking-tight">
+                  {settings.home_about_heading ? (
+                    <span dangerouslySetInnerHTML={{ __html: settings.home_about_heading.replace(/\n/g, '<br/>') }} />
+                  ) : (
+                    <>Tworzę wizerunek,<br /> który <span className="text-primary">działa.</span></>
+                  )}
+                </h2>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                  {settings.home_about_text || 'Cześć! Jestem Szymon. Łączę świat fotografii, designu i marketingu, aby pomagać markom opowiadać ich historie. Wierzę w minimalizm, autentyczność i siłę dobrego designu.'}
+                </p>
 
-      {/* 5. CTA Section */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-dark z-0">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]" />
-        </div>
+                <div className="flex gap-4">
+                  <Link
+                    href="/o-mnie"
+                    className="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-white bg-dark hover:bg-primary transition-colors shadow-lg shadow-dark/20 hover:shadow-primary/30"
+                  >
+                    Poznaj mnie
+                  </Link>
+                  <Link
+                    href="/portfolio"
+                    className="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-dark bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+                  >
+                    Moje prace
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
+        </ScrollReveal>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 tracking-tight">Zrealizujmy Twój <br />kolejny wielki projekt.</h2>
-          <p className="text-xl mb-12 text-gray-300 max-w-2xl mx-auto">
-            Od strategii, przez kreację, aż po realizację. Jesteśmy gotowi podjąć wyzwanie.
-          </p>
-          <Link
-            href="/kontakt"
-            className="inline-block bg-white text-dark font-bold py-5 px-12 rounded-full hover:bg-primary hover:text-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
-          >
-            Rozpocznij współpracę
-          </Link>
-        </div>
-      </section>
+        {/* 4. Recent Work */}
+        <ScrollReveal direction="right">
+          <RecentWork />
+        </ScrollReveal>
 
-    </main>
+        {/* 5. Testimonials Section */}
+        <ScrollReveal direction="left">
+          <Testimonials />
+        </ScrollReveal>
+
+        {/* 5. CTA Section */}
+        <section className="py-32 relative overflow-hidden">
+          <div className="absolute inset-0 bg-dark z-0">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]" />
+          </div>
+
+          <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 tracking-tight">Zrealizujmy Twój <br />kolejny wielki projekt.</h2>
+            <p className="text-xl mb-12 text-gray-300 max-w-2xl mx-auto">
+              Od strategii, przez kreację, aż po realizację. Jesteśmy gotowi podjąć wyzwanie.
+            </p>
+            <Link
+              href="/kontakt"
+              className="inline-block bg-white text-dark font-bold py-5 px-12 rounded-full hover:bg-primary hover:text-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
+            >
+              Rozpocznij współpracę
+            </Link>
+          </div>
+        </section>
+
+      </main>
+    </>
   );
 }
