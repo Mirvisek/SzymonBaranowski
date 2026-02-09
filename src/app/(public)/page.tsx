@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Camera, Palette, Rocket } from 'lucide-react';
 import HeroCarousel from '@/components/HeroCarousel';
@@ -49,10 +50,14 @@ export default async function Home() {
             <div className="relative group">
               {/* Mock Image */}
               <div className="aspect-[4/5] rounded-3xl bg-gray-200 overflow-hidden shadow-2xl relative z-10 group-hover:transform group-hover:scale-[1.01] transition-all duration-700">
-                <img
+                {/* Używamy Image dla optymalizacji */}
+                <Image
                   src="https://placehold.co/800x1000?text=Szymon"
                   alt="Szymon"
+                  width={800}
+                  height={1000}
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                  priority
                 />
               </div>
               {/* Decorative element */}
