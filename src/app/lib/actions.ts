@@ -157,11 +157,11 @@ export async function updateSettings(prevState: any, formData: FormData) {
             });
         }
     } catch (e) {
-        return { message: 'Failed to update settings' };
+        return { message: 'Nie udało się zaktualizować ustawień' };
     }
 
     revalidatePath('/');
-    return { message: 'Settings updated successfully' };
+    return { message: 'success: Ustawienia zostały pomyślnie zaktualizowane' };
 }
 
 export async function createOffer(prevState: any, formData: FormData) {
