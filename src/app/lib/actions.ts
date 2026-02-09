@@ -480,3 +480,96 @@ export async function deleteFAQ(id: string) {
         throw new Error(`Błąd usuwania pytania: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
     }
 }
+// Legal Documents
+export async function createLegalDocument(prevState: any, formData: FormData) {
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    
+    if (!title || !content) {
+        return { message: 'Tytuł i treść są wymagane' };
+    }
+    
+    // Create slug from title
+    const slug = title
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    
+    try {
+        // Get max order
+        const maxOrder = await prisma.legalDocument.findFirst({
+            orderBy: { order: 'desc' },
+            select: { order: true }
+        });
+        
+        await prisma.legalDocument.create({
+            data: {
+                title,
+                slug,
+                content,
+                order: (maxOrder?.order ?? -1) + 1,
+                visible: true
+            }
+        });
+        
+        revalidatePath('/admin/legal-documents');
+        redirect('/admin/legal-documents');
+    } catch (error: any) {
+        return { message: `Błąd tworzenia dokumentu: ${error instanceof Error ? error.message : 'Nieznany błąd'}` };
+    }
+}
+
+export async function updateLegalDocument(id: string, prevState: any, formData: FormData) {
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const visible = formData.get('visible') === 'true';
+    
+    if (!title || !content) {
+        return { message: 'Tytuł i treść są wymagane' };
+    }
+    
+    const slug = title
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    
+    try {
+        await prisma.legalDocument.update({
+            where: { id },
+            data: { title, slug, content, visible }
+        });
+        
+        revalidatePath('/admin/legal-documents');
+        revalidatePath('/');
+        return { message: 'success: Dokument zaktualizowany' };
+    } catch (error: any) {
+        return { message: `Błąd aktualizacji dokumentu: ${error instanceof Error ? error.message : 'Nieznany błąd'}` };
+    }
+}
+
+export async function deleteLegalDocument(id: string) {
+    try {
+        await prisma.legalDocument.delete({ where: { id } });
+        revalidatePath('/admin/legal-documents');
+        revalidatePath('/');
+    } catch (error: any) {
+        throw new Error(`Błąd usuwania dokumentu: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
+    }
+}
+
+export async function updateLegalDocumentOrder(id: string, newOrder: number) {
+    try {
+        await prisma.legalDocument.update({
+            where: { id },
+            data: { order: newOrder }
+        });
+        revalidatePath('/admin/legal-documents');
+        revalidatePath('/');
+    } catch (error: any) {
+        throw new Error(`Błąd zmiany kolejności: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
+    }
+}

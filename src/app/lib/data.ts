@@ -112,3 +112,37 @@ export async function getFAQs() {
         return [];
     }
 }
+
+export async function getLegalDocuments() {
+    try {
+        return await prisma.legalDocument.findMany({
+            orderBy: { order: 'asc' }
+        });
+    } catch (error) {
+        console.error('Database Error:', error);
+        return [];
+    }
+}
+
+export async function getVisibleLegalDocuments() {
+    try {
+        return await prisma.legalDocument.findMany({
+            where: { visible: true },
+            orderBy: { order: 'asc' }
+        });
+    } catch (error) {
+        console.error('Database Error:', error);
+        return [];
+    }
+}
+
+export async function getLegalDocumentBySlug(slug: string) {
+    try {
+        return await prisma.legalDocument.findUnique({
+            where: { slug }
+        });
+    } catch (error) {
+        console.error('Database Error:', error);
+        return null;
+    }
+}
