@@ -8,6 +8,15 @@ export default function AccessibilityWidget() {
     const [fontSize, setFontSize] = useState(100);
     const [contrast, setContrast] = useState(false);
 
+    // Load settings from localStorage on mount
+    useEffect(() => {
+        const savedFontSize = localStorage.getItem('accessibility-font-size');
+        const savedContrast = localStorage.getItem('accessibility-contrast');
+
+        if (savedFontSize) setFontSize(parseInt(savedFontSize));
+        if (savedContrast) setContrast(savedContrast === 'true');
+    }, []);
+
     useEffect(() => {
         // Apply settings
         document.documentElement.style.fontSize = `${fontSize}%`;
@@ -16,6 +25,10 @@ export default function AccessibilityWidget() {
         } else {
             document.documentElement.classList.remove('high-contrast');
         }
+
+        // Save to localStorage
+        localStorage.setItem('accessibility-font-size', fontSize.toString());
+        localStorage.setItem('accessibility-contrast', contrast.toString());
     }, [fontSize, contrast]);
 
     return (

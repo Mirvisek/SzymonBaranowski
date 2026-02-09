@@ -90,3 +90,77 @@ body {
     transform: translateY(0);
   }
 }
+/* High Contrast Mode - Accessibility */
+.high-contrast {
+  /* Force high contrast colors */
+  --color-dark: #000000;
+  --color-primary: #000000;
+  --color-accent: #000000;
+  background: #ffffff !important;
+}
+
+.high-contrast body {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Text elements */
+.high-contrast p,
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3,
+.high-contrast h4,
+.high-contrast h5,
+.high-contrast h6,
+.high-contrast span,
+.high-contrast div,
+.high-contrast a,
+.high-contrast button,
+.high-contrast label {
+  color: #000000 !important;
+}
+
+/* Links with underline */
+.high-contrast a {
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+}
+
+/* Buttons */
+.high-contrast button {
+  border: 3px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.high-contrast button:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Form inputs */
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  border: 2px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Cards and containers */
+.high-contrast [class*="bg-"] {
+  background: #ffffff !important;
+  border: 2px solid #000000 !important;
+}
+
+/* Remove shadows */
+.high-contrast * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Images */
+.high-contrast img {
+  border: 2px solid #000000 !important;
+  filter: grayscale(100%) contrast(120%) !important;
+}
