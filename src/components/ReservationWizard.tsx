@@ -33,6 +33,7 @@ export default function ReservationWizard({ offers }: { offers: Offer[] }) {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
 
     const questions = selectedOffer?.questions ? JSON.parse(selectedOffer.questions) : [];
 
@@ -380,7 +381,7 @@ export default function ReservationWizard({ offers }: { offers: Offer[] }) {
                                         className="mt-1 rounded text-primary focus:ring-primary"
                                     />
                                     <span className="text-sm text-gray-600">
-                                        Akceptuję regulamin usługi <span className="font-semibold">{selectedOffer?.title}</span> oraz politykę prywatności.
+                                        Akceptuję <button type="button" onClick={() => setShowTerms(true)} className="text-primary font-semibold hover:underline">regulamin usługi {selectedOffer?.title}</button> oraz politykę prywatności.
                                     </span>
                                 </label>
                             </div>
@@ -401,6 +402,73 @@ export default function ReservationWizard({ offers }: { offers: Offer[] }) {
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Terms Modal */}
+            <AnimatePresence>
+                {showTerms && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+                        >
+                            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                                <h3 className="text-xl font-bold text-gray-900">Regulamin Rezerwacji</h3>
+                                <button
+                                    onClick={() => setShowTerms(false)}
+                                    className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                            </div>
+
+                            <div className="p-6 overflow-y-auto leading-relaxed text-gray-700 space-y-4">
+                                <p className="font-bold text-lg mb-2">Regulamin Świadczenia Usług - {selectedOffer?.title}</p>
+
+                                <h4 className="font-bold text-dark mt-4">1. Postanowienia ogólne</h4>
+                                <p>Niniejszy regulamin określa zasady rezerwacji oraz realizacji usług fotograficznych i marketingowych świadczonych przez Szymona Baranowskiego.</p>
+
+                                <h4 className="font-bold text-dark mt-4">2. Rezerwacja terminu</h4>
+                                <p>Rezerwacja terminu następuje poprzez wypełnienie formularza rezerwacyjnego. Potwierdzenie rezerwacji jest wysyłane drogą elektroniczną na podany adres e-mail.</p>
+
+                                <h4 className="font-bold text-dark mt-4">3. Płatności</h4>
+                                <p>Cena usługi jest podana w ofercie ({selectedOffer?.price}). Płatność następuje zgodnie z ustaleniami: gotówką w dniu sesji lub przelewem na wskazane konto. W przypadku niektórych usług może być wymagany zadatek.</p>
+
+                                <h4 className="font-bold text-dark mt-4">4. Odwołanie rezerwacji</h4>
+                                <p>Klient ma prawo odwołać lub przełożyć rezerwację bezkosztowo do 48 godzin przed planowanym terminem. W przypadku odwołania w terminie krótszym niż 48 godzin, Usługodawca zastrzega sobie prawo do zachowania zadatku (jeśli został wpłacony).</p>
+
+                                <h4 className="font-bold text-dark mt-4">5. Realizacja usługi</h4>
+                                <p>Usługodawca zobowiązuje się do wykonania usługi z najwyższą starannością i zgodnie z ustaleniami. Czas oczekiwania na gotowe materiały (zdjęcia/projekty) wynosi standardowo do 14 dni roboczych od dnia wykonania usługi, chyba że ustalono inaczej.</p>
+
+                                <h4 className="font-bold text-dark mt-4">6. Prawa autorskie i wizerunek</h4>
+                                <p>Klient otrzymuje licencję na wykorzystanie zdjęć do celów prywatnych (oraz komercyjnych, jeśli tak ustalono w ofercie). Usługodawca zachowuje prawa autorskie osobiste.</p>
+
+                                <h4 className="font-bold text-dark mt-4">7. Dane osobowe (RODO)</h4>
+                                <p>Dane osobowe podane w formularzu są przetwarzane wyłącznie w celu realizacji usługi rezerwacji i kontaktu z Klientem. Administratorem danych jest Szymon Baranowski.</p>
+                            </div>
+
+                            <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                                <button
+                                    onClick={() => setShowTerms(false)}
+                                    className="px-6 py-2 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                                >
+                                    Zamknij
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setAcceptedTerms(true);
+                                        setShowTerms(false);
+                                    }}
+                                    className="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-dark transition-colors"
+                                >
+                                    Akceptuję Regulamin
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
