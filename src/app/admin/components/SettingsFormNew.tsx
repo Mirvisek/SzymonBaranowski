@@ -1,10 +1,11 @@
 'use client';
 
 import { updateSettings } from '@/app/lib/actions';
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import RichTextEditor from './RichTextEditor';
 import ImageUploader from './ImageUploader';
 import AccountSettingsForm from './AccountSettingsForm';
+import Toast from '@/components/Toast';
 import {
     Save, Globe, User, Share2, FileText, Code, Layout,
     ShieldCheck, Settings as SettingsIcon, Eye, Mail,
@@ -14,6 +15,7 @@ import {
 export default function SettingsFormNew({ settings, currentUserEmail }: { settings: Record<string, string>, currentUserEmail: string }) {
     const [state, formAction] = useActionState(updateSettings, null);
     const [activeTab, setActiveTab] = useState('general');
+    const [showToast, setShowToast] = useState(false);
 
     // Local state for specialized inputs
     const [aboutContent, setAboutContent] = useState(settings.about_content || '');
@@ -21,6 +23,13 @@ export default function SettingsFormNew({ settings, currentUserEmail }: { settin
     const [privacyContent, setPrivacyContent] = useState(settings.policy_privacy_content || '');
     const [cookiesContent, setCookiesContent] = useState(settings.policy_cookies_content || '');
     const [navbarLogoUrl, setNavbarLogoUrl] = useState(settings.navbar_logo_url || '');
+
+    // Show toast when state changes
+    useEffect(() => {
+        if (state?.message) {
+            setShowToast(true);
+        }
+    }, [state]);
 
     // Reusable input component
     const InputGroup = ({ label, name, defaultValue, type = "text", rows, hint }: {
@@ -160,15 +169,6 @@ export default function SettingsFormNew({ settings, currentUserEmail }: { settin
                         <AccountSettingsForm currentUserEmail={currentUserEmail} />
                     ) : (
                         <form id="site-settings-form" action={formAction}>
-                            {/* Success/Error Message */}
-                            {state?.message && (
-                                <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${state.message.includes('success')
-                                    ? 'bg-green-50 text-green-700 border border-green-200'
-                                    : 'bg-red-50 text-red-700 border border-red-200'
-                                    }`}>
-                                    {state.message.includes('success') ? '✅' : '❌'} {state.message}
-                                </div>
-                            )}
 
                             {/* OGÓLNE */}
                             {activeTab === 'general' && (
@@ -333,6 +333,15 @@ export default function SettingsFormNew({ settings, currentUserEmail }: { settin
                     )}
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            {showToast && state?.message && (
+                <Toast
+                    message={state.message.replace('✅ ', '').replace('❌ ', '')}
+                    type={state.message.includes('success') ? 'success' : 'error'}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 }
