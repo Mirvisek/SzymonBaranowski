@@ -1,9 +1,8 @@
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getPortfolioCategory, getPortfolioItems } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
-import GalleryClient from '@/app/portfolio/[slug]/GalleryClient';
+import GalleryClient from './GalleryClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +18,7 @@ export default async function CategoryGalleryPage({ params }: { params: Promise<
 
     return (
         <main className="min-h-screen bg-light">
-            <Navbar />
+
 
             <div className="pt-28 pb-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Breadcrumbs items={[
@@ -48,7 +47,7 @@ export default async function CategoryGalleryPage({ params }: { params: Promise<
                 )}
             </div>
 
-            <Footer />
+
         </main>
     );
 }
